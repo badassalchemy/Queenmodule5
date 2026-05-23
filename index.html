@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quantum Queen · Module 5 — The Coronation: Becoming Sovereign</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;width:100%;font-family:'Montserrat',sans-serif;background:#1F1320;color:#EDD8E5;overflow:hidden}
+  #root{height:100vh;width:100vw}
+  ::-webkit-scrollbar{height:3px;width:4px}
+  ::-webkit-scrollbar-thumb{background:rgba(181,123,174,0.32);border-radius:2px}
+  textarea{font-family:'Montserrat',sans-serif;font-weight:500}
+  button{font-family:'Montserrat',sans-serif;outline:none}
+  @keyframes fadeIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes expandIn{0%{opacity:0;max-height:0}100%{opacity:1;max-height:5000px}}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(181,123,174,0.4)}50%{box-shadow:0 0 0 8px rgba(181,123,174,0)}}
+  @keyframes crownShimmer{0%,100%{opacity:0.85}50%{opacity:1}}
+  .lesson-content{animation:fadeIn .3s ease both}
+  .expand-content{animation:expandIn .35s ease both;overflow:hidden}
+  .pulse{animation:pulseGlow 2s ease-in-out infinite}
+  .crown-shimmer{animation:crownShimmer 3s ease-in-out infinite}
+  @media(max-width:768px){
+    .desktop-only{display:none!important}
+    .mobile-only{display:flex!important}
+    .sidebar{position:absolute!important;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease}
+    .sidebar.open{transform:translateX(0)}
+    .main-inner{padding:24px 20px 80px!important}
+    .lesson-top{flex-direction:column;gap:8px!important}
+    .lesson-bottom{flex-direction:column;align-items:stretch!important}
+    .lesson-bottom button{width:100%}
+    .audit-domain-grid{grid-template-columns:1fr!important}
+    .krс-grid{grid-template-columns:1fr!important}
+  }
+  @media(min-width:769px){.mobile-only{display:none!important}}
+  #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#1F1320;color:#B57BAE;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;z-index:9999;flex-direction:column;gap:12px}
+  .spinner{width:32px;height:32px;border:2px solid rgba(181,123,174,0.2);border-top-color:#B57BAE;border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="spinner"></div><div>✦ Loading your Coronation…</div></div>
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.23.0/babel.min.js"></script>
+
+<script type="text/babel">
+const e = React.createElement;
+const { useState, useEffect } = React;
+
+const MAUVE_LIGHT = "#B57BAE";
+const MAUVE_DEEP = "#6E3865";
+const BRAND_GRAD = "linear-gradient(135deg, " + MAUVE_LIGHT + " 0%, " + MAUVE_DEEP + " 100%)";
+const SIDEBAR_IMG = "https://raw.githubusercontent.com/badassalchemy/imageassets/main/mainbackground1.jpg";
+
+const DARK = {
+  bg: "#1F1320", bgCard: "#2A1A2D", darkMid: MAUVE_DEEP,
+  accent: MAUVE_DEEP, accentLt: MAUVE_LIGHT, detail: "#C99CC1",
+  moonPrl: "#FAEFF4", txt: "#FAEFF4", txtSec: "#EDD8E5",
+  txtMuted: "#C9A8BE", txtFaded: "#9B7090",
+  border: "rgba(181,123,174,0.18)", borderMid: "rgba(181,123,174,0.32)",
+  inputBg: "#160C18", shadow: "0 4px 20px rgba(45,15,35,0.4)"
+};
+
+const LIGHT = {
+  bg: "#FBF5F8", bgCard: "#FFFFFF", darkMid: MAUVE_DEEP,
+  accent: MAUVE_DEEP, accentLt: MAUVE_LIGHT, detail: MAUVE_LIGHT,
+  moonPrl: "#FFFFFF", txt: "#3A1E33", txtSec: "#5A2F4E",
+  txtMuted: "#7A4A6C", txtFaded: "#A87A9A",
+  border: "rgba(110,56,101,0.12)", borderMid: "rgba(110,56,101,0.22)",
+  inputBg: "#FBF5F8", shadow: "0 4px 20px rgba(110,56,101,0.1)"
+};
+
+const MODULE_DATA = {
+  title: "Module 5",
+  subtitle: "The Coronation",
+  subtitleAccent: "Becoming Sovereign",
+  tagline: "You did the work. Now you crown her. This is where she becomes you — not as practice, but as default.",
+  lessons: [
+    {
+      id: 0, title: "Welcome to The Coronation", dur: "8-12 min", type: "video",
+      desc: "You did not stumble into this lesson. You arrived here. Through the shadow work in Module 2. Through the belief audit in Module 3. Through the quantum identity installation in Module 4. Four modules of excavating, releasing, declaring, and rehearsing. And now — Module 5 — is the one where you stop rehearsing and start ruling. This is not the next module. This is the era you have been training for. The Sovereign Queen Era is not a destination you arrive at when everything in your outer life finally lines up. It is a frequency you enter the moment you stop waiting for permission. The woman who lives here does not consult her old patterns before she makes a decision. She does not check with the part of herself that was afraid before she acts. She moves from the only place a sovereign woman ever moves from — her own knowing.",
+      desc2: "What we are doing in this module is different from everything that came before. Modules 2 through 4 were about transformation. This module is about installation. You are going to write the values she operates from. You are going to meet the parallel timeline self who has been one decision away from you this entire time. You are going to physically audit your life — your wardrobe, your phone, your friendships, your environment — and release everything that belongs to the woman you were. You are going to write the standards no one gets to negotiate with you on anymore. And then, at the end, you are going to crown yourself on the page. Not as ceremony for ceremony's sake. As fact. By the time you close this module, the woman you have been declaring yourself to be will not be a goal. She will be the woman writing the next sentence.",
+      takeaways: [
+        "Sovereign is not a feeling. Sovereign is a position. You either occupy it or you abandon it — there is no third option.",
+        "The Era does not begin when your outer life looks right. It begins the moment you stop outsourcing your authority. That can happen in the next breath.",
+        "Every previous module gave you tools. This module gives you a throne. The work now is sitting in it without flinching when the room reacts.",
+        "The point of this module is not to make you feel more powerful. It is to make the old patterns impossible. We are closing the back door."
+      ],
+      actions: [
+        "Watch the Module 5 welcome video inside the Skool classroom.",
+        "Before you start the first lesson, ask yourself one question and write the answer somewhere you will see it: What would I do today if I already knew I was her?",
+        "If the word 'sovereign' feels too big for you right now — write that down too. That feeling is the exact thing this module dissolves."
+      ]
+    },
+    {
+      id: 1, title: "The Constitution — Your Core Values", dur: "30-45 min", type: "journals",
+      desc: "Most women have never written down their actual values. They have inherited values — the things their family said mattered, the things their culture rewarded, the things their last relationship required of them. They have performance values — the things they say matter when someone is watching. And they have aspirational values — the things they wish mattered to them but do not actually run their decisions. None of those are her values. Her values are different. Her values are the non-negotiables that her decisions move through before her conscious mind even gets involved. The internal constitution that makes some choices automatic and other choices impossible. Without explicit values, your standards have no spine. You write a beautiful standards list and the moment a real opportunity tests it, you cave — because there is nothing underneath the standard holding it in place. The value is what holds it in place.",
+      desc2: "This is why we are doing this here, in Module 5, and not in Module 1 where most programs would put it. If you had written your values in Module 1 — before the shadow work, before the belief audit, before the quantum identity work — you would have written your inherited values. The values of the woman you were performing as. Now, after everything you have done, you can finally see which values are actually yours and which ones you were told were yours. This lesson is where you write your own constitution. Not the one you were handed. The one you are choosing to live by, on purpose, from here.",
+      takeaways: [
+        "Inherited values are why women self-abandon. They keep the agreements someone else wrote for them and call it integrity.",
+        "Your real values are not the ones you wish you had. They are the ones that, when violated, make you furious or broken. Watch for the charge — the charge is the value.",
+        "Five values is the right number. More than five and you have a wish list. Fewer than five and you have not done the work.",
+        "A value you cannot defend in the moment you most want to abandon it is not yet a value. It is a preference. This lesson turns preferences into law."
+      ],
+      actions: [
+        "Move through each prompt slowly. Write the first answer that comes up, then push past it to the truer one underneath.",
+        "When you finish, name your final five. Write them on paper. Put them somewhere you see them daily.",
+        "Read them out loud. The body learns through the voice, not the page."
+      ],
+      journals: [
+        { id: "values-1", prompt: "What makes you furious when you see it violated — in the world, in other women's lives, in your own past? Anger is the cleanest signal of a buried value. What you cannot tolerate is the negative space around what you most stand for. Name it specifically. The anger you have not been allowed to feel is pointing directly at the value you have not been allowed to claim." },
+        { id: "values-2", prompt: "What did you have to suppress, downplay, or apologize for to be loved by the people who raised you? Whatever you had to hide is almost always a value. The thing that was 'too much' is the thing that is most yours." },
+        { id: "values-3", prompt: "When have you felt most fully yourself in the last five years? Walk through the moment in detail. What were you doing, who were you with, what were you allowed to be? The values active in that moment are your real values — not the ones you perform." },
+        { id: "values-4", prompt: "What do you secretly judge other women for — not in a way you are proud of, but honestly? Judgment is often a value showing up sideways. What you most criticize in others is often the value you have not yet claimed in yourself. Be honest. No one is reading this." },
+        { id: "values-5", prompt: "If you knew you would die in one year — and you had to choose five things that would govern every decision you made between now and then — what would they be? Not five things you would do. Five things that would make the decisions for you. These are very close to your real values." },
+        { id: "values-final", prompt: "Now write your final five. Read your answers above. Look for the words and themes that keep returning. Name your five values in one word or short phrase each — the kind of word you could write on the inside of a ring. These are your constitution. Sovereignty. Truth. Devotion. Beauty. Wildness. Whatever they are — write them as her." }
+      ]
+    },
+    {
+      id: 2, title: "The Parallel Self Letter", dur: "20-30 min", type: "journals",
+      desc: "Right now, in a parallel timeline running alongside this one, there is a version of you who made every single decision differently. She is not a fantasy. She is not a metaphor. In the quantum field, she is as real as the version of you reading this sentence — and the only thing separating you is a series of decisions that were one breath away from going the other way. She is the you who said yes when you said no. The you who left when you stayed. The you who charged the price. The you who picked up the phone. The you who walked away from the room you spent another year of your life trying to be loved by. She has been one decision away this entire time.",
+      desc2: "This lesson is not about creating her. It is about meeting her. And then — letting her speak. Because here is the truth about the parallel self that most quantum work skips: she has been writing you letters for years. Every time you felt a pull toward something you did not pursue, that was her voice. Every time you knew something before you let yourself know it, that was her. Every time you walked away from a decision and your body would not let you forget it — that was her trying to reach you across the timeline. In this lesson, you are going to write back. And you are going to listen to what she has to say. By the time you finish, the gap between you will not be five years. It will be a single decision. And you will already know which one.",
+      takeaways: [
+        "The parallel self is not a future fantasy. She is the timeline you would already be on if you had made different decisions at five different inflection points in your life. She is closer than your conscious mind wants you to believe.",
+        "The point of meeting her is not to mourn what you missed. It is to recognize that the same choice-points are happening right now — and you can collapse the distance in this lifetime, not the next one.",
+        "The letter from her is not imagined. It is retrieved. The information has been in your body the entire time. The pen is just the doorway.",
+        "A parallel timeline is not 'manifesting.' It is recognition. You are not creating her. You are remembering that she was always the option."
+      ],
+      actions: [
+        "Find a quiet space. Do not skip this. The exercise does not work in noise.",
+        "Watch the Timeline Meditation inside the Skool classroom before you write. It is what opens the door.",
+        "Write in her voice, not yours. She is speaking to you. Let her say the hard things."
+      ],
+      parallelSelf: {
+        timelineFields: [
+          { id: "parallel-5yr", prompt: "Five years ago — what was the decision you almost made but did not? The one that, if you had made it, would have changed the trajectory. Be specific. Who were you. Where were you. What was the choice. What did you choose instead and why." },
+          { id: "parallel-1yr", prompt: "One year ago — what was the decision you almost made but did not? Same exercise. Smaller timeframe, sharper edges. What did the parallel self choose that you turned away from?" },
+          { id: "parallel-6mo", prompt: "Six months ago — what was the decision you almost made but did not? The one that is still close enough to feel in your chest." },
+          { id: "parallel-week", prompt: "Last week — what was the decision you almost made but did not? This one is the most important. The parallel self is not in the future. She is in last week. She is in this week." }
+        ],
+        letterField: {
+          id: "parallel-letter",
+          prompt: "Now write the letter from her to you. Start it: 'I am writing to you from the timeline where I chose me.' Let her tell you what she chose at every one of those decision points. Let her tell you what her life is like now because of those choices. Let her tell you what she wants you to know. Let her tell you what she is asking you to do this week. Do not edit. Do not perform. Let her speak.",
+          placeholder: "I am writing to you from the timeline where I chose me..."
+        },
+        closingField: {
+          id: "parallel-decision",
+          prompt: "Read it back. Then answer: What is the one decision she is asking you to make this week — the one that would collapse five years of distance into seven days? Write it specifically. Then write whether you are going to make it."
+        }
+      }
+    },
+    {
+      id: 3, title: "The Queen Audit", dur: "60-90 min", type: "queenAudit",
+      desc: "You have done the inner work. You have met the shadow, audited the beliefs, written the future self, named your values, and met the parallel timeline. Now we make it physical. Because here is the truth that most identity work avoids — your identity is not just in your nervous system. It is in your closet. It is in your phone. It is in the chairs at your kitchen table. It is in the books on your shelf, the people in your DMs, the bottles in your bathroom, the apps on your home screen. Every object, every contact, every input in your daily environment is either a vote for the woman you are becoming — or a vote for the woman you were. There are no neutral objects. There are no neutral relationships. There are no neutral inputs. The woman who is sovereign curates her world on purpose. The woman who is not lets her world curate her.",
+      desc2: "This audit is the lesson that makes the entire program real. You are going to move through six domains of your physical, digital, and relational life. In each domain, you are going to ask one question of every item: Does this belong to the woman I am becoming, or the woman I was? And then you are going to make one of three decisions — keep, release, or upgrade. Keep is for what already belongs to her. Release is for what does not. Upgrade is for what is close but needs to be elevated to match. Do not do this audit in your head. Do it with your hands. Open the closet. Open the phone. Open the calendar. Make the audit a physical event. By the time you finish, your environment will match your frequency — and your nervous system will stop fighting the upgrade because the upgrade will be visible everywhere it looks.",
+      takeaways: [
+        "Your environment is the most underestimated identity tool. You can do all the inner work in the world, but if your closet still belongs to the woman you were — your body will keep defaulting to her.",
+        "Keep, release, upgrade is the only framework you need. Anything more complicated is procrastination dressed up as discernment.",
+        "Release without ceremony is just throwing things away. Release with intention is a sovereignty practice. Notice the difference as you move through this.",
+        "Some things you will not be ready to release yet. That is honest. Mark them for review in 30 days and move on. Pressure does not create real release. Recognition does."
+      ],
+      actions: [
+        "Block at least 90 minutes for this lesson. Possibly longer. Do not try to do this audit between meetings. This is a ceremony.",
+        "Have three lists ready — Keep, Release, Upgrade. Whether physical or digital, every item gets sorted.",
+        "Move through the six domains in order. The order matters — we start with the easiest (wardrobe) and end with the hardest (relationships)."
+      ],
+      queenAudit: {
+        intro: "Move through each domain in order. For each one, write what you are keeping, releasing, and upgrading. Do not do this in your head. Do it with your hands.",
+        domains: [
+          {
+            id: "audit-wardrobe",
+            title: "Wardrobe",
+            number: "01",
+            framing: "Open your closet. Pull out the items you have not worn in 12 months. Hold each one and ask — who was I when I wore this? Does the woman I am becoming wear this?",
+            prompts: [
+              { key: "keep", label: "Keep", placeholder: "What pieces in your closet already belong to the woman you are becoming? Name them." },
+              { key: "release", label: "Release", placeholder: "What pieces are you holding onto out of loyalty to an old version of yourself? Be honest." },
+              { key: "upgrade", label: "Upgrade", placeholder: "What is missing from your wardrobe that she would already own? Make the list." }
+            ]
+          },
+          {
+            id: "audit-digital",
+            title: "Digital Environment",
+            number: "02",
+            framing: "Pick up your phone. Look at the home screen. Open the apps you actually use. Scroll through the notifications you actually allow.",
+            prompts: [
+              { key: "keep", label: "Keep", placeholder: "What apps, tools, and digital habits are feeding her? What stays on the home screen?" },
+              { key: "release", label: "Release", placeholder: "What apps does she not have on her home screen? What notifications is she not available for? Delete or mute them now." },
+              { key: "upgrade", label: "Upgrade", placeholder: "What is the first thing she sees when she opens her phone in the morning? Make it that. What home screen, lock screen, or daily ritual would she install?" }
+            ]
+          },
+          {
+            id: "audit-social",
+            title: "Social Media Inputs",
+            number: "03",
+            framing: "Open Instagram, TikTok, whatever platforms you use. Look at who you follow. Look at your saved content. Look at what the algorithm has decided you are.",
+            prompts: [
+              { key: "keep", label: "Keep", placeholder: "Which accounts and creators feed her? Whose content makes you bigger, not smaller?" },
+              { key: "release", label: "Release", placeholder: "Unfollow anyone whose content makes you smaller, more comparative, or more anxious — even if you 'like' them. Especially if you 'like' them. Name who is going." },
+              { key: "upgrade", label: "Upgrade", placeholder: "Who are the 10 women whose frequency you want closest to yours? Follow them on purpose. Train the algorithm to reflect her." }
+            ]
+          },
+          {
+            id: "audit-environment",
+            title: "Physical Environment",
+            number: "04",
+            framing: "Walk through your space. Look at it like you are seeing it for the first time. Look at it like she is seeing it.",
+            prompts: [
+              { key: "keep", label: "Keep", placeholder: "What in your home already feels like her? The objects, corners, and rituals that already belong to the new frequency?" },
+              { key: "release", label: "Release", placeholder: "What is energetically clutter — gifts you do not love, items from past relationships, things you have outgrown but kept out of guilt? Release them." },
+              { key: "upgrade", label: "Upgrade", placeholder: "What is one upgrade — a candle, a fresh flower, a new sheet set, a lamp, a piece of art — that would shift the frequency of your most-used room? Do it this week." }
+            ]
+          },
+          {
+            id: "audit-inputs",
+            title: "Inputs & Consumption",
+            number: "05",
+            framing: "Look at what you have been consuming for the last 30 days. What you read. What you listened to. What you watched. What you talked about.",
+            prompts: [
+              { key: "keep", label: "Keep", placeholder: "What books, podcasts, conversations, and content are actively feeding her? What stays in the rotation?" },
+              { key: "release", label: "Release", placeholder: "What are you consuming that is no longer feeding her? Stop consuming it. No commentary, no announcement. Just stop. Name it here." },
+              { key: "upgrade", label: "Upgrade", placeholder: "What is she reading, listening to, learning right now? Name three sources. Start this week." }
+            ]
+          },
+          {
+            id: "audit-relationships",
+            title: "Relationships & Inner Circle",
+            number: "06",
+            framing: "This is the audit most women avoid for years. We are not avoiding it. Look at who has standing access to your time, your energy, your phone, your heart.",
+            prompts: [
+              { key: "keep", label: "Keep", placeholder: "Who in your life is in alignment with the woman you are becoming? Name them. Move them closer." },
+              { key: "release", label: "Release", placeholder: "Who is calibrated to the woman you were — and would be uncomfortable if you fully became her? Be honest. You do not have to cut them off today. You do have to see it clearly today." },
+              { key: "upgrade", label: "Upgrade", placeholder: "What relationship are you most afraid to audit? Why? Write what you would do if you were not afraid. Who are the women whose company would elevate you — and how are you going to get into their rooms?" }
+            ]
+          }
+        ],
+        closingField: {
+          id: "audit-closing",
+          prompt: "What did this audit cost the old identity? And what does the new identity gain because of what you released?"
+        }
+      }
+    },
+    {
+      id: 4, title: "The Queen Standards Document", dur: "60-90 min", type: "queenStandards",
+      desc: "This is the document most women never write. Not a goal list. Not a vision board. Not a list of things you want to attract. A standards list. The standards of the woman you are becoming. What she requires. What she accepts. What she will and will not move for. What she knows about herself without needing anyone to confirm it. This document is going to become one of the most important things you create in this entire program. Because when you know your standards clearly — decisions become easy. Boundaries become natural. The wrong people stop getting access. And the right opportunities start finding you.",
+      desc2: "Here is why this matters at the frequency level. Your standards are a direct signal about what you believe you deserve. Low standards — or no standards at all — signal that you will accept whatever comes because you are not sure you deserve better. Sovereign standards signal something completely different. They say I know exactly who I am and what I require. And I am willing to hold that line — even when it is uncomfortable. Even when it means walking away. Even when it means waiting. That signal — that clarity — is magnetic. It is the frequency that calls in what actually matches you. We are going to build that document now, across six domains, with the values you named in Lesson 2 as the spine. By the time you finish, you will have the document she lives by. The one you read before a difficult conversation. Before a sales call. Before you forget who you are.",
+      takeaways: [
+        "Standards without values are just rules. Values without standards are just words. This lesson marries them.",
+        "Be specific. 'Someone who respects me' is not a standard. Specific behaviors are. Name the behaviors.",
+        "Your standards expand as you do. This is a living document. The version you write today is the floor — not the ceiling.",
+        "The most powerful section is the last one — what she knows. Do not rush it."
+      ],
+      actions: [
+        "Open this lesson with your final five values from Lesson 2 in front of you. They are the spine of every standard you write.",
+        "Work through each domain in order. Do not skip.",
+        "When you finish, read it out loud, alone, slowly. Then save the .txt so you can return to it."
+      ],
+      queenStandards: {
+        intro: "Six domains. Read each prompt, then write what she requires — not what you have been accepting. Specific. Behavioral. Final.",
+        domains: [
+          {
+            id: "std-romantic",
+            title: "Standards in Romantic Relationships",
+            number: "01",
+            framing: "Be specific. Not 'someone who respects me.' What does respect look like specifically? What are the behaviors? What are the red flags she no longer ignores?",
+            fields: [
+              { id: "std-romantic-1", prompt: "She requires a partner who..." },
+              { id: "std-romantic-2", prompt: "She will not accept..." },
+              { id: "std-romantic-3", prompt: "She knows she deserves..." },
+              { id: "std-romantic-4", prompt: "She no longer explains herself when..." },
+              { id: "std-romantic-5", prompt: "She walks away without guilt when..." }
+            ]
+          },
+          {
+            id: "std-friendships",
+            title: "Standards in Friendships & Inner Circle",
+            number: "02",
+            framing: "Who does the woman you are becoming allow into her inner circle?",
+            fields: [
+              { id: "std-friend-1", prompt: "Her inner circle consists of women who..." },
+              { id: "std-friend-2", prompt: "She has released the guilt around outgrowing..." },
+              { id: "std-friend-3", prompt: "She no longer spends energy on relationships where..." },
+              { id: "std-friend-4", prompt: "She actively seeks out women who..." },
+              { id: "std-friend-5", prompt: "The energy she requires from her friendships is..." }
+            ]
+          },
+          {
+            id: "std-business",
+            title: "Standards in Business & Money",
+            number: "03",
+            framing: "How does she operate in her business? What does she require from clients, collaborations, and opportunities?",
+            fields: [
+              { id: "std-biz-1", prompt: "She charges..." },
+              { id: "std-biz-2", prompt: "She does not discount when..." },
+              { id: "std-biz-3", prompt: "She requires clients who..." },
+              { id: "std-biz-4", prompt: "She says no to opportunities that..." },
+              { id: "std-biz-5", prompt: "She says yes without hesitation to..." },
+              { id: "std-biz-6", prompt: "She knows her work is worth..." },
+              { id: "std-biz-7", prompt: "She no longer justifies or over-explains her pricing when..." }
+            ]
+          },
+          {
+            id: "std-self",
+            title: "Standards in How She Treats Herself",
+            number: "04",
+            framing: "This is the one most women forget. Standards are not just about what you require from others — they are about what you require from yourself.",
+            fields: [
+              { id: "std-self-1", prompt: "She speaks to herself with..." },
+              { id: "std-self-2", prompt: "She no longer tolerates her own habit of..." },
+              { id: "std-self-3", prompt: "She shows up for herself by..." },
+              { id: "std-self-4", prompt: "She honors her body by..." },
+              { id: "std-self-5", prompt: "She protects her energy by..." },
+              { id: "std-self-6", prompt: "She keeps her word to herself about..." },
+              { id: "std-self-7", prompt: "She no longer apologizes for..." }
+            ]
+          },
+          {
+            id: "std-daily",
+            title: "Standards in Her Daily Life & Environment",
+            number: "05",
+            framing: "What does her daily life look and feel like? What does she require from her environment, her time, her energy?",
+            fields: [
+              { id: "std-daily-1", prompt: "She protects her mornings by..." },
+              { id: "std-daily-2", prompt: "She no longer spends time on..." },
+              { id: "std-daily-3", prompt: "Her physical environment makes her feel..." },
+              { id: "std-daily-4", prompt: "She is intentional about what she consumes — content, food, conversations — because..." },
+              { id: "std-daily-5", prompt: "She ends her days by..." },
+              { id: "std-daily-6", prompt: "She no longer says yes to things that make her feel..." }
+            ]
+          },
+          {
+            id: "std-knows",
+            title: "What She Knows",
+            number: "06",
+            framing: "The most powerful part of the document. These are not affirmations you are trying to believe. These are truths she already operates from. Write them as her.",
+            fields: [
+              { id: "std-knows-1", prompt: "She knows that..." },
+              { id: "std-knows-2", prompt: "She knows that..." },
+              { id: "std-knows-3", prompt: "She knows that..." },
+              { id: "std-knows-4", prompt: "She knows that..." },
+              { id: "std-knows-5", prompt: "She knows that..." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      id: 5, title: "The Coronation Ceremony", dur: "30-45 min", type: "coronation",
+      desc: "You have done everything that comes before a coronation. You have met the parts of yourself you were taught to exile. You have audited the beliefs that were running you from underneath. You have written the woman you are becoming into existence and rehearsed her until your nervous system could find her in the dark. You have named your values, met your parallel self, audited your life, and written the standards she lives by. There is one thing left. You have to crown her.",
+      desc2: "Most personal development programs end with a worksheet. A summary. A 'go forth and apply what you have learned.' That is not what is happening here. What is happening here is a ceremony. A line in the sand. A moment that you can return to for the rest of your life and say — this is the day I stopped waiting to become her and started moving as her, on purpose, forever. You are going to write a one-page declaration. You are going to sign it. You are going to date it. And then you are going to read it out loud — to yourself, alone, in a room with the door closed — because the body learns through the voice. By the time you finish this lesson, you will not be a woman in transformation. You will be a woman in her era. There is a difference. You will feel it.",
+      takeaways: [
+        "Ceremony is not performance. Ceremony is commitment in physical form. The act of signing is the part that lands in the nervous system. Do not skip the signing.",
+        "You are not asking anyone for permission. You are giving yourself permission, on the page, in your own handwriting, witnessed by no one but yourself. That is the entire point.",
+        "This page becomes a reference document. Return to it every birthday. Every new year. Every time you forget who you are.",
+        "The Coronation is not the end of the work. It is the line that makes the next chapter inevitable."
+      ],
+      actions: [
+        "Set the space. Light a candle. Pour something. Close the door. Treat this like the ceremony it is.",
+        "Write your declaration in full. Do not summarize. Do not edit. Let it be long if it needs to be long.",
+        "Sign it. Date it. Read it out loud. Save it."
+      ],
+      coronation: {
+        intro: "Five parts. Move through them in order. Each part is its own field. When you finish — sign it, date it, and read it aloud.",
+        parts: [
+          {
+            id: "cor-release",
+            number: "I",
+            title: "The Release",
+            opener: "Today I release...",
+            prompt: "Name everything you are formally releasing as you cross into this era. The old identity. The patterns. The agreements. The versions of yourself you have been carrying out of loyalty. Name them. Release them on the page.",
+            placeholder: "Today I release..."
+          },
+          {
+            id: "cor-recognition",
+            number: "II",
+            title: "The Recognition",
+            opener: "I recognize that I am...",
+            prompt: "Name what is true about you now that the work has been done. Not aspirationally. Factually. What have you become across these five modules? Name her. Specifically.",
+            placeholder: "I recognize that I am..."
+          },
+          {
+            id: "cor-declaration",
+            number: "III",
+            title: "The Declaration",
+            opener: "From this day forward, I am...",
+            prompt: "This is the core of the coronation. What are you declaring as your new default? What is no longer optional? What is no longer up for debate? Write it like law — because for you, it is.",
+            placeholder: "From this day forward, I am..."
+          },
+          {
+            id: "cor-promise",
+            number: "IV",
+            title: "The Promise",
+            opener: "I promise her — the woman I am becoming — that I will...",
+            prompt: "What is the vow you are making to her? What is she allowed to count on you for, from this day forward, that she could not count on you for before?",
+            placeholder: "I promise her — the woman I am becoming — that I will..."
+          }
+        ],
+        signature: {
+          nameField: { id: "cor-name", label: "Signed", placeholder: "Your name" },
+          dateField: { id: "cor-date", label: "Date", placeholder: "Today's date" },
+          locationField: { id: "cor-location", label: "Location", placeholder: "Where you are crowning yourself" }
+        },
+        closingField: {
+          id: "cor-closing",
+          prompt: "Now read it out loud. To yourself. Alone. With the door closed. Then come back and write one sentence: What is different in your body now that you have read it?"
+        }
+      }
+    },
+    {
+      id: 6, title: "The Handoff — Into the Meditation", dur: "5-8 min", type: "video",
+      desc: "You are her now. The work is done. The Sovereign Queen Era is not something you are waiting to enter — it is the room you are already standing in. There is only one thing left to do, and it is what Module 6 is for. You are going to encode her into sound.",
+      desc2: "The custom meditation track we create together in Module 6 is not a wellness exercise. It is a transmission. It is the voice of the woman you just crowned, recorded in your own voice, encoded with the frequency you just declared into existence, played back to your nervous system every morning for the rest of your life. This is how she stops being a practice and becomes the default voice in your head — the one that makes the decisions when you are tired, the one that whispers the answer when the room goes quiet, the one that knows what to do when the old self is panicking. The next module is the call. Book it now if you have not. Come to it having done the work in this module. Come to it as her.",
+      takeaways: [
+        "The meditation is the seal on everything you just did. Without it, the work stays in your head. With it, the work lives in your body — every morning, forever.",
+        "You do not need to prepare anything for the call. You just need to come having done Modules 1 through 5. That is the preparation.",
+        "Module 6 is a conversation, not a lecture. We are going to build her voice, her words, her transmission — together.",
+        "This is the only part of the program that lives outside the classroom. Because the meditation we make together is yours. And it cannot be mass-produced."
+      ],
+      actions: [
+        "Watch the Module 5 closing video inside the Skool classroom.",
+        "Book your Module 6 call if you have not yet.",
+        "Read your Coronation declaration one more time. Out loud. Then close this module — knowing exactly who you are walking into Module 6 as."
+      ]
+    }
+  ]
+};
+
+const STORAGE_KEY = "quantumqueen-module5-v1";
+
+function App() {
+  const [theme, setTheme] = useState("dark");
+  const [active, setActive] = useState(0);
+  const [done, setDone] = useState({});
+  const [journals, setJournals] = useState({});
+  const [auditEntries, setAuditEntries] = useState({});
+  const [mobileNav, setMobileNav] = useState(false);
+  const [saveStatus, setSaveStatus] = useState("");
+  const [loaded, setLoaded] = useState(false);
+
+  const C = theme === "dark" ? DARK : LIGHT;
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s.theme) setTheme(s.theme);
+        if (s.done) setDone(s.done);
+        if (s.journals) setJournals(s.journals);
+        if (s.auditEntries) setAuditEntries(s.auditEntries);
+      }
+    } catch (err) {}
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme, done, journals, auditEntries }));
+    } catch (err) {}
+  }, [theme, done, journals, auditEntries, loaded]);
+
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+  const toggleDone = (i) => setDone({ ...done, [i]: !done[i] });
+
+  const updateJournal = (fieldId, text) => {
+    const existing = journals[fieldId] || {};
+    setJournals({ ...journals, [fieldId]: { text, savedAt: existing.savedAt } });
+  };
+
+  const updateAudit = (domainId, key, text) => {
+    const domainData = auditEntries[domainId] || {};
+    setAuditEntries({ ...auditEntries, [domainId]: { ...domainData, [key]: text } });
+  };
+
+  const getAllFieldIds = (lesson) => {
+    const ids = [];
+    if (lesson.journals) lesson.journals.forEach(j => ids.push(j.id));
+    if (lesson.parallelSelf) {
+      lesson.parallelSelf.timelineFields.forEach(f => ids.push(f.id));
+      ids.push(lesson.parallelSelf.letterField.id);
+      ids.push(lesson.parallelSelf.closingField.id);
+    }
+    if (lesson.queenAudit) {
+      lesson.queenAudit.domains.forEach(d => ids.push(d.id));
+      ids.push(lesson.queenAudit.closingField.id);
+    }
+    if (lesson.queenStandards) {
+      lesson.queenStandards.domains.forEach(d => d.fields.forEach(f => ids.push(f.id)));
+    }
+    if (lesson.coronation) {
+      lesson.coronation.parts.forEach(p => ids.push(p.id));
+      ids.push(lesson.coronation.signature.nameField.id);
+      ids.push(lesson.coronation.signature.dateField.id);
+      ids.push(lesson.coronation.signature.locationField.id);
+      ids.push(lesson.coronation.closingField.id);
+    }
+    return ids;
+  };
+
+  const saveLessonJournals = () => {
+    const lesson = MODULE_DATA.lessons[active];
+    const ids = getAllFieldIds(lesson);
+    const now = new Date().toISOString();
+    const updated = { ...journals };
+    ids.forEach(id => {
+      if (updated[id]) updated[id] = { ...updated[id], savedAt: now };
+    });
+    setJournals(updated);
+    setSaveStatus("✦ Saved");
+    setTimeout(() => setSaveStatus(""), 2000);
+  };
+
+  const exportLesson = (lesson) => {
+    let content = "QUANTUM QUEEN · MODULE 5 — THE CORONATION: BECOMING SOVEREIGN\n";
+    content += "Lesson " + lesson.id + ": " + lesson.title + "\n";
+    content += "Exported " + new Date().toLocaleString() + "\n";
+    content += "═══════════════════════════════════════════════════════\n\n";
+
+    if (lesson.journals) {
+      lesson.journals.forEach(j => {
+        content += j.prompt + "\n\n";
+        content += ((journals[j.id] && journals[j.id].text) || "(no entry)") + "\n\n";
+        content += "───────────────────────────────────────────────────────\n\n";
+      });
+    }
+
+    if (lesson.parallelSelf) {
+      const ps = lesson.parallelSelf;
+      content += "TIMELINE INFLECTION POINTS\n\n";
+      ps.timelineFields.forEach(f => {
+        content += f.prompt + "\n\n";
+        content += ((journals[f.id] && journals[f.id].text) || "(no entry)") + "\n\n";
+        content += "───────────────────────────────────────────────────────\n\n";
+      });
+      content += "THE LETTER FROM HER\n\n";
+      content += ps.letterField.prompt + "\n\n";
+      content += ((journals[ps.letterField.id] && journals[ps.letterField.id].text) || "(no entry)") + "\n\n";
+      content += "═══════════════════════════════════════════════════════\n\n";
+      content += "THE DECISION\n\n";
+      content += ps.closingField.prompt + "\n\n";
+      content += ((journals[ps.closingField.id] && journals[ps.closingField.id].text) || "(no entry)") + "\n\n";
+    }
+
+    if (lesson.queenAudit) {
+      const qa = lesson.queenAudit;
+      content += "THE QUEEN AUDIT — SIX DOMAINS\n\n";
+      qa.domains.forEach(d => {
+        content += d.number + " · " + d.title.toUpperCase() + "\n";
+        content += d.framing + "\n\n";
+        d.prompts.forEach(p => {
+          const val = (auditEntries[d.id] && auditEntries[d.id][p.key]) || "(no entry)";
+          content += p.label.toUpperCase() + ":\n" + val + "\n\n";
+        });
+        content += "───────────────────────────────────────────────────────\n\n";
+      });
+      content += "AUDIT CLOSING REFLECTION\n\n";
+      content += qa.closingField.prompt + "\n\n";
+      content += ((journals[qa.closingField.id] && journals[qa.closingField.id].text) || "(no entry)") + "\n\n";
+    }
+
+    if (lesson.queenStandards) {
+      const qs = lesson.queenStandards;
+      content += "THE QUEEN STANDARDS DOCUMENT\n\n";
+      qs.domains.forEach(d => {
+        content += d.number + " · " + d.title.toUpperCase() + "\n";
+        content += d.framing + "\n\n";
+        d.fields.forEach(f => {
+          content += f.prompt + "\n";
+          content += ((journals[f.id] && journals[f.id].text) || "(no entry)") + "\n\n";
+        });
+        content += "───────────────────────────────────────────────────────\n\n";
+      });
+    }
+
+    if (lesson.coronation) {
+      const co = lesson.coronation;
+      content += "★ THE CORONATION DECLARATION ★\n\n";
+      co.parts.forEach(p => {
+        content += p.number + " · " + p.title.toUpperCase() + "\n";
+        content += p.opener + "\n";
+        content += ((journals[p.id] && journals[p.id].text) || "(no entry)") + "\n\n";
+        content += "───────────────────────────────────────────────────────\n\n";
+      });
+      content += "V · THE SIGNATURE\n\n";
+      content += "Signed: " + ((journals[co.signature.nameField.id] && journals[co.signature.nameField.id].text) || "_______________________") + "\n";
+      content += "Date:   " + ((journals[co.signature.dateField.id] && journals[co.signature.dateField.id].text) || "_______________________") + "\n";
+      content += "Place:  " + ((journals[co.signature.locationField.id] && journals[co.signature.locationField.id].text) || "_______________________") + "\n\n";
+      content += "═══════════════════════════════════════════════════════\n\n";
+      content += "AFTER READING IT OUT LOUD\n\n";
+      content += co.closingField.prompt + "\n\n";
+      content += ((journals[co.closingField.id] && journals[co.closingField.id].text) || "(no entry)") + "\n\n";
+    }
+
+    content += "\n\nYou are the alchemy.\nBadass Alchemy · Baddie Society · Quantum Queen\n";
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "quantum-queen-m5-lesson-" + lesson.id + "-" + lesson.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const progress = Math.round((Object.values(done).filter(Boolean).length / MODULE_DATA.lessons.length) * 100);
+
+  return (
+    <div style={{ display: "flex", height: "100vh", background: C.bg, color: C.txtSec }}>
+
+      {/* SIDEBAR */}
+      <div className={"sidebar" + (mobileNav ? " open" : "")} style={{
+        width: 300, minWidth: 300, height: "100%",
+        background: theme === "dark" ? "linear-gradient(180deg, rgba(31,19,32,0.96), rgba(31,19,32,0.99)), url(" + SIDEBAR_IMG + ")" : "linear-gradient(180deg, rgba(251,245,248,0.97), rgba(251,245,248,0.99)), url(" + SIDEBAR_IMG + ")",
+        backgroundSize: "cover", backgroundPosition: "center",
+        borderRight: "1px solid " + C.border,
+        padding: "32px 22px",
+        overflowY: "auto",
+        display: "flex", flexDirection: "column"
+      }}>
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2.5, color: C.accentLt, textTransform: "uppercase", marginBottom: 4 }}>
+            ✦ Badass Alchemy
+          </div>
+          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 24, fontWeight: 700, color: C.txt, lineHeight: 1.15 }}>
+            Quantum Queen
+          </div>
+          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, color: C.txtFaded, textTransform: "uppercase", marginTop: 4 }}>
+            Baddie Society
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 24, padding: 16, background: theme === "dark" ? "rgba(110,56,101,0.18)" : "rgba(110,56,101,0.06)", borderRadius: 12, border: "1px solid " + C.border }}>
+          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 6 }}>{MODULE_DATA.title}</div>
+          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 18, fontWeight: 700, color: C.txt, lineHeight: 1.25, marginBottom: 2 }}>{MODULE_DATA.subtitle}</div>
+          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 14, fontWeight: 400, color: C.detail, lineHeight: 1.3, marginBottom: 8 }}>{MODULE_DATA.subtitleAccent}</div>
+          <div style={{ fontSize: 11, color: C.txtMuted, lineHeight: 1.55, fontStyle: "italic" }}>{MODULE_DATA.tagline}</div>
+        </div>
+
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, color: C.txtMuted, textTransform: "uppercase" }}>Progress</span>
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, color: C.accentLt }}>{progress}%</span>
+          </div>
+          <div style={{ height: 4, background: theme === "dark" ? "rgba(181,123,174,0.15)" : "rgba(110,56,101,0.1)", borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ width: progress + "%", height: "100%", background: BRAND_GRAD, borderRadius: 4, transition: "width .5s cubic-bezier(.34,1.56,.64,1)" }} />
+          </div>
+        </div>
+
+        <div style={{ flex: 1 }}>
+          {MODULE_DATA.lessons.map((lesson, i) => {
+            const isActive = active === i;
+            const isDone = done[i];
+            return (
+              <div
+                key={i}
+                onClick={() => { setActive(i); setMobileNav(false); }}
+                style={{
+                  padding: "12px 14px",
+                  marginBottom: 6,
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  background: isActive ? (theme === "dark" ? "rgba(110,56,101,0.32)" : "rgba(110,56,101,0.1)") : "transparent",
+                  border: "1px solid " + (isActive ? C.borderMid : "transparent"),
+                  transition: "all .2s"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: "50%",
+                    background: isDone ? BRAND_GRAD : "transparent",
+                    border: "1.5px solid " + (isDone ? "transparent" : C.borderMid),
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 10, fontWeight: 800, color: isDone ? "#FFFFFF" : C.txtFaded,
+                    flexShrink: 0
+                  }}>
+                    {isDone ? "✓" : (i)}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 14.5, fontWeight: 700, color: isActive ? C.txt : C.txtSec, lineHeight: 1.3 }}>{lesson.title}</div>
+                    <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, textTransform: "uppercase", marginTop: 2 }}>{lesson.dur}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid " + C.border, display: "flex", gap: 8 }}>
+          <button onClick={toggleTheme} style={{
+            flex: 1, fontSize: 9, fontWeight: 700, letterSpacing: 1,
+            color: C.txtMuted, background: "transparent",
+            padding: "9px 12px", borderRadius: 50,
+            border: "1px solid " + C.borderMid, cursor: "pointer",
+            textTransform: "uppercase"
+          }}>{theme === "dark" ? "☀ Light" : "☾ Dark"}</button>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div style={{ flex: 1, overflowY: "auto", position: "relative" }}>
+
+        {/* Mobile top bar */}
+        <div className="mobile-only" style={{
+          display: "none",
+          position: "sticky", top: 0, zIndex: 50,
+          background: C.bg, borderBottom: "1px solid " + C.border,
+          padding: "14px 20px",
+          alignItems: "center", justifyContent: "space-between"
+        }}>
+          <button onClick={() => setMobileNav(!mobileNav)} style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: 1,
+            color: C.txt, background: "transparent",
+            padding: "8px 14px", borderRadius: 50,
+            border: "1px solid " + C.borderMid, cursor: "pointer",
+            textTransform: "uppercase"
+          }}>☰ Lessons</button>
+          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 16, color: C.accentLt }}>Module 5</div>
+        </div>
+
+        <div className="main-inner" style={{ padding: "44px 56px 80px", maxWidth: 820, margin: "0 auto" }}>
+          {(() => {
+            const lesson = MODULE_DATA.lessons[active];
+
+            return (
+              <div className="lesson-content" key={active}>
+
+                {/* HEADER */}
+                <div className="lesson-top" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 18, marginBottom: 8 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2.5, color: C.accentLt, textTransform: "uppercase", marginBottom: 8 }}>
+                      ✦ Lesson {lesson.id} · {lesson.dur}
+                    </div>
+                    <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: "clamp(26px,3.5vw,34px)", lineHeight: 1.15, color: C.txt, marginBottom: 0 }}>
+                      {lesson.title}
+                    </h1>
+                  </div>
+                  <button onClick={() => toggleDone(active)} style={{
+                    fontSize: 9, fontWeight: 700, letterSpacing: 1.2,
+                    color: done[active] ? "#FFFFFF" : C.txtMuted,
+                    background: done[active] ? BRAND_GRAD : "transparent",
+                    padding: "10px 16px", borderRadius: 50,
+                    border: "1px solid " + (done[active] ? "transparent" : C.borderMid),
+                    cursor: "pointer", textTransform: "uppercase",
+                    whiteSpace: "nowrap", flexShrink: 0
+                  }}>{done[active] ? "✓ Complete" : "Mark Complete"}</button>
+                </div>
+
+                <div style={{ height: 1, background: C.border, margin: "24px 0 32px" }} />
+
+                {/* DESC */}
+                <div style={{ fontSize: 14.5, lineHeight: 1.85, color: C.txtSec, marginBottom: 22, fontWeight: 500 }}>
+                  {lesson.desc}
+                </div>
+                <div style={{ fontSize: 14.5, lineHeight: 1.85, color: C.txtSec, marginBottom: 36, fontWeight: 500, fontStyle: "italic" }}>
+                  {lesson.desc2}
+                </div>
+
+                {/* VIDEO CALLOUT */}
+                {lesson.type === "video" && (
+                  <div style={{
+                    background: BRAND_GRAD,
+                    borderRadius: 14,
+                    padding: "24px 26px",
+                    marginBottom: 36,
+                    border: "1px solid rgba(255,255,255,0.25)"
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                      <div style={{ width: 52, height: 52, minWidth: 52, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.4)" }}>
+                        <span style={{ fontSize: 20, color: "#FFFFFF" }}>▶</span>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: "#3A1E33", textTransform: "uppercase", marginBottom: 6 }}>Video Lesson</div>
+                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.35 }}>
+                          Watch this lesson inside the <em style={{ color: "#2A1424", fontStyle: "italic", fontWeight: 700 }}>Skool classroom.</em>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAKEAWAYS */}
+                <SectionHeader icon="🌙" label="Core Takeaways" color={C.accent} />
+                <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 24, marginBottom: 32, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                  {lesson.takeaways.map((t, i) => (
+                    <div key={i} style={{ display: "flex", gap: 12, marginBottom: i === lesson.takeaways.length - 1 ? 0 : 16, alignItems: "flex-start" }}>
+                      <span style={{ fontSize: 14, color: C.accentLt, marginTop: 2 }}>✦</span>
+                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 400, fontSize: 16, color: C.txtSec, lineHeight: 1.55 }}>{t}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* ACTIONS */}
+                <SectionHeader icon="⭐" label="Your Action Steps" color={C.accent} />
+                <div style={{ marginBottom: 36 }}>
+                  {lesson.actions.map((a, i) => (
+                    <div key={i} style={{ display: "flex", gap: 14, marginBottom: 14, padding: 16, background: C.bgCard, borderRadius: 12, border: "1px solid " + C.border, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                      <div style={{ width: 26, height: 26, borderRadius: "50%", background: BRAND_GRAD, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, fontWeight: 800, color: "#FFFFFF" }}>{i + 1}</div>
+                      <div style={{ fontSize: 13.5, color: C.txtSec, lineHeight: 1.7, fontWeight: 500 }}>{a}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* JOURNALS (values lesson) */}
+                {lesson.journals && (
+                  <div>
+                    <SectionHeader icon="🔮" label="Your Journal Practice" color={C.accent} status={saveStatus} />
+                    {lesson.journals.map(j => {
+                      const entry = journals[j.id];
+                      const isFinal = j.id === "values-final";
+                      return (
+                        <div key={j.id} style={{ background: isFinal ? "linear-gradient(135deg, rgba(110,56,101,0.18), rgba(181,123,174,0.08))" : C.bgCard, borderRadius: 14, border: "1px solid " + (isFinal ? C.borderMid : C.border), padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                          {isFinal && <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 8 }}>★ Your Final Five</div>}
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{j.prompt}</div>
+                          {entry && entry.savedAt && (
+                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                          )}
+                          <textarea
+                            value={(entry && entry.text) || ""}
+                            onChange={(ev) => updateJournal(j.id, ev.target.value)}
+                            placeholder={isFinal ? "Your five values, in her words." : "Write here. No editing. Just truth."}
+                            rows={isFinal ? 7 : 6}
+                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
+                          />
+                        </div>
+                      );
+                    })}
+                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Values" />
+                  </div>
+                )}
+
+                {/* PARALLEL SELF */}
+                {lesson.parallelSelf && (
+                  <div>
+                    <SectionHeader icon="⏳" label="Timeline Inflection Points" color={C.accent} status={saveStatus} />
+                    <div style={{ fontSize: 12.5, color: C.txtMuted, lineHeight: 1.7, marginBottom: 18, fontStyle: "italic" }}>
+                      Move through the four timeframes. In each one — name the decision you almost made but did not.
+                    </div>
+                    {lesson.parallelSelf.timelineFields.map((f, i) => {
+                      const entry = journals[f.id];
+                      const labels = ["5 Years Ago", "1 Year Ago", "6 Months Ago", "Last Week"];
+                      return (
+                        <div key={f.id} style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 8 }}>{labels[i]}</div>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 16, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{f.prompt}</div>
+                          {entry && entry.savedAt && (
+                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                          )}
+                          <textarea
+                            value={(entry && entry.text) || ""}
+                            onChange={(ev) => updateJournal(f.id, ev.target.value)}
+                            placeholder="The decision. The moment. What you chose instead."
+                            rows={4}
+                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
+                          />
+                        </div>
+                      );
+                    })}
+
+                    <SectionHeader icon="💌" label="The Letter From Her" color={C.accent} />
+                    {(() => {
+                      const lf = lesson.parallelSelf.letterField;
+                      const entry = journals[lf.id];
+                      return (
+                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.borderMid, padding: 26, marginBottom: 28, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 19, color: theme === "dark" ? C.detail : C.accent, marginBottom: 8, lineHeight: 1.4 }}>{lf.prompt}</div>
+                          {entry && entry.savedAt && (
+                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                          )}
+                          <textarea
+                            value={(entry && entry.text) || ""}
+                            onChange={(ev) => updateJournal(lf.id, ev.target.value)}
+                            placeholder={lf.placeholder}
+                            rows={16}
+                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "16px 18px", fontSize: 14, color: C.txtSec, lineHeight: 1.85, resize: "vertical", marginTop: 10, fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic" }}
+                          />
+                        </div>
+                      );
+                    })()}
+
+                    <SectionHeader icon="✨" label="The Decision This Week" color={C.accent} />
+                    {(() => {
+                      const cf = lesson.parallelSelf.closingField;
+                      const entry = journals[cf.id];
+                      return (
+                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
+                          {entry && entry.savedAt && (
+                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                          )}
+                          <textarea
+                            value={(entry && entry.text) || ""}
+                            onChange={(ev) => updateJournal(cf.id, ev.target.value)}
+                            placeholder="The decision. And whether you are going to make it."
+                            rows={5}
+                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
+                          />
+                        </div>
+                      );
+                    })()}
+                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Letter" />
+                  </div>
+                )}
+
+                {/* QUEEN AUDIT */}
+                {lesson.queenAudit && (
+                  <div>
+                    <div style={{
+                      background: BRAND_GRAD,
+                      borderRadius: 14,
+                      padding: "20px 24px",
+                      marginBottom: 28,
+                      border: "1px solid rgba(255,255,255,0.25)"
+                    }}>
+                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: "#3A1E33", textTransform: "uppercase", marginBottom: 8 }}>The Audit</div>
+                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 17, fontStyle: "italic", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.5 }}>{lesson.queenAudit.intro}</div>
+                    </div>
+
+                    {lesson.queenAudit.domains.map((d, idx) => (
+                      <div key={d.id} style={{ marginBottom: 32 }}>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 10 }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 32, fontWeight: 700, color: C.accentLt, lineHeight: 1 }}>{d.number}</div>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 22, fontWeight: 700, color: C.txt, lineHeight: 1.2 }}>{d.title}</div>
+                        </div>
+                        <div style={{ fontSize: 13.5, color: C.txtMuted, lineHeight: 1.75, marginBottom: 16, fontStyle: "italic", paddingLeft: 4 }}>
+                          {d.framing}
+                        </div>
+                        <div className="krс-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                          {d.prompts.map(p => {
+                            const value = (auditEntries[d.id] && auditEntries[d.id][p.key]) || "";
+                            const labelColors = {
+                              keep: { bg: theme === "dark" ? "rgba(110,56,101,0.32)" : "rgba(110,56,101,0.12)", txt: theme === "dark" ? "#FAEFF4" : C.accent },
+                              release: { bg: theme === "dark" ? "rgba(155,112,144,0.22)" : "rgba(155,112,144,0.12)", txt: theme === "dark" ? "#C9A8BE" : "#7A4A6C" },
+                              upgrade: { bg: "linear-gradient(135deg, rgba(181,123,174,0.32), rgba(110,56,101,0.32))", txt: "#FFFFFF" }
+                            };
+                            const lc = labelColors[p.key];
+                            return (
+                              <div key={p.key} style={{ background: C.bgCard, borderRadius: 12, border: "1px solid " + C.border, padding: 16, boxShadow: theme === "light" ? C.shadow : "none", display: "flex", flexDirection: "column" }}>
+                                <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: lc.txt, background: lc.bg, padding: "5px 10px", borderRadius: 50, textTransform: "uppercase", marginBottom: 10, alignSelf: "flex-start" }}>{p.label}</div>
+                                <textarea
+                                  value={value}
+                                  onChange={(ev) => updateAudit(d.id, p.key, ev.target.value)}
+                                  placeholder={p.placeholder}
+                                  rows={6}
+                                  style={{ width: "100%", flex: 1, background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 12.5, color: C.txtSec, lineHeight: 1.7, resize: "vertical" }}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+
+                    <SectionHeader icon="✨" label="Closing Reflection" color={C.accent} status={saveStatus} />
+                    {(() => {
+                      const cf = lesson.queenAudit.closingField;
+                      const entry = journals[cf.id];
+                      return (
+                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
+                          {entry && entry.savedAt && (
+                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                          )}
+                          <textarea
+                            value={(entry && entry.text) || ""}
+                            onChange={(ev) => updateJournal(cf.id, ev.target.value)}
+                            placeholder="What did the old identity lose? What does the new identity gain?"
+                            rows={5}
+                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
+                          />
+                        </div>
+                      );
+                    })()}
+                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Audit" />
+                  </div>
+                )}
+
+                {/* QUEEN STANDARDS */}
+                {lesson.queenStandards && (
+                  <div>
+                    <div style={{
+                      background: BRAND_GRAD,
+                      borderRadius: 14,
+                      padding: "20px 24px",
+                      marginBottom: 28,
+                      border: "1px solid rgba(255,255,255,0.25)"
+                    }}>
+                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: "#3A1E33", textTransform: "uppercase", marginBottom: 8 }}>My Queen Standards</div>
+                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 17, fontStyle: "italic", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.5 }}>{lesson.queenStandards.intro}</div>
+                    </div>
+
+                    {lesson.queenStandards.domains.map(d => (
+                      <div key={d.id} style={{ marginBottom: 36 }}>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 10 }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 30, fontWeight: 700, color: C.accentLt, lineHeight: 1 }}>{d.number}</div>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 20, fontWeight: 700, color: C.txt, lineHeight: 1.2 }}>{d.title}</div>
+                        </div>
+                        <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 14, fontStyle: "italic", paddingLeft: 4 }}>
+                          {d.framing}
+                        </div>
+                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                          {d.fields.map((f, fi) => {
+                            const entry = journals[f.id];
+                            return (
+                              <div key={f.id} style={{ marginBottom: fi === d.fields.length - 1 ? 0 : 16, paddingBottom: fi === d.fields.length - 1 ? 0 : 16, borderBottom: fi === d.fields.length - 1 ? "none" : "1px solid " + C.border }}>
+                                <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 15.5, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{f.prompt}</div>
+                                <textarea
+                                  value={(entry && entry.text) || ""}
+                                  onChange={(ev) => updateJournal(f.id, ev.target.value)}
+                                  placeholder="Be specific. Behavioral. Final."
+                                  rows={3}
+                                  style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 13, color: C.txtSec, lineHeight: 1.7, resize: "vertical", marginTop: 6 }}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Standards" />
+                  </div>
+                )}
+
+                {/* CORONATION CEREMONY */}
+                {lesson.coronation && (
+                  <div>
+                    <div className="crown-shimmer" style={{
+                      background: BRAND_GRAD,
+                      borderRadius: 14,
+                      padding: "28px 26px",
+                      marginBottom: 32,
+                      border: "1px solid rgba(255,255,255,0.35)",
+                      textAlign: "center"
+                    }}>
+                      <div style={{ fontSize: 36, marginBottom: 8 }}>♛</div>
+                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3, color: "#3A1E33", textTransform: "uppercase", marginBottom: 10 }}>The Coronation</div>
+                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 19, fontStyle: "italic", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.5, maxWidth: 520, margin: "0 auto" }}>{lesson.coronation.intro}</div>
+                    </div>
+
+                    {lesson.coronation.parts.map(p => {
+                      const entry = journals[p.id];
+                      return (
+                        <div key={p.id} style={{ marginBottom: 24 }}>
+                          <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 10 }}>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 28, fontWeight: 700, color: C.accentLt, lineHeight: 1, minWidth: 32 }}>{p.number}</div>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 22, fontWeight: 700, color: C.txt, lineHeight: 1.2 }}>{p.title}</div>
+                          </div>
+                          <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.borderMid, padding: 24, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 18, color: theme === "dark" ? C.detail : C.accent, marginBottom: 10, lineHeight: 1.4 }}>{p.opener}</div>
+                            <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 12, fontStyle: "italic" }}>{p.prompt}</div>
+                            {entry && entry.savedAt && (
+                              <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 10, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                            )}
+                            <textarea
+                              value={(entry && entry.text) || ""}
+                              onChange={(ev) => updateJournal(p.id, ev.target.value)}
+                              placeholder={p.placeholder}
+                              rows={7}
+                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 14, color: C.txtSec, lineHeight: 1.85, resize: "vertical", fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic" }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* SIGNATURE */}
+                    <div style={{ marginBottom: 28 }}>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 10 }}>
+                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 28, fontWeight: 700, color: C.accentLt, lineHeight: 1, minWidth: 32 }}>V</div>
+                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 22, fontWeight: 700, color: C.txt, lineHeight: 1.2 }}>The Signature</div>
+                      </div>
+                      <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 14, fontStyle: "italic", paddingLeft: 48 }}>
+                        Sign your name. Write today's date. Write where you are. This is now a document.
+                      </div>
+                      <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.borderMid, padding: 24, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                        {[lesson.coronation.signature.nameField, lesson.coronation.signature.dateField, lesson.coronation.signature.locationField].map((sf, si) => (
+                          <div key={sf.id} style={{ marginBottom: si === 2 ? 0 : 14 }}>
+                            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 6 }}>{sf.label}</div>
+                            <input
+                              type="text"
+                              value={(journals[sf.id] && journals[sf.id].text) || ""}
+                              onChange={(ev) => updateJournal(sf.id, ev.target.value)}
+                              placeholder={sf.placeholder}
+                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 15, color: C.txtSec, lineHeight: 1.5, fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, outline: "none" }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* CLOSING */}
+                    <SectionHeader icon="✨" label="After You Read It Out Loud" color={C.accent} status={saveStatus} />
+                    {(() => {
+                      const cf = lesson.coronation.closingField;
+                      const entry = journals[cf.id];
+                      return (
+                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
+                          {entry && entry.savedAt && (
+                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                          )}
+                          <textarea
+                            value={(entry && entry.text) || ""}
+                            onChange={(ev) => updateJournal(cf.id, ev.target.value)}
+                            placeholder="One sentence. What is different in your body now?"
+                            rows={4}
+                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
+                          />
+                        </div>
+                      );
+                    })()}
+                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Coronation" />
+                  </div>
+                )}
+
+                {/* NAVIGATION */}
+                <div style={{ marginTop: 44, paddingTop: 28, borderTop: "1px solid " + C.border, display: "flex", gap: 12, justifyContent: "space-between", alignItems: "center" }} className="lesson-bottom">
+                  {active > 0 ? (
+                    <button onClick={() => setActive(active - 1)} style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: C.txtMuted, background: "transparent", padding: "12px 22px", borderRadius: 50, border: "1px solid " + C.borderMid, cursor: "pointer", textTransform: "uppercase" }}>← Previous</button>
+                  ) : <span />}
+                  {active < MODULE_DATA.lessons.length - 1 && (
+                    <button onClick={() => setActive(active + 1)} style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: C.moonPrl, background: "linear-gradient(135deg," + C.accent + "," + C.darkMid + ")", padding: "13px 24px", borderRadius: 50, border: "none", cursor: "pointer", textTransform: "uppercase" }}>Next Lesson →</button>
+                  )}
+                </div>
+
+                <div style={{ marginTop: 56, paddingTop: 28, borderTop: "1px solid " + C.border, textAlign: "center" }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 18, fontStyle: "italic", color: C.accent, marginBottom: 6 }}>You are the alchemy.</div>
+                  <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 2, textTransform: "uppercase" }}>Badass Alchemy · Baddie Society · Quantum Queen</div>
+                </div>
+
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SectionHeader({ icon, label, color, status }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+      <span style={{ fontSize: 16 }}>{icon}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: color, textTransform: "uppercase" }}>{label}</span>
+      {status && <span style={{ marginLeft: "auto", fontSize: 9, fontWeight: 700, letterSpacing: 1, color: color }}>{status}</span>}
+    </div>
+  );
+}
+
+function SaveExportButtons({ onSave, onExport, C, saveLabel }) {
+  return (
+    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
+      <button onClick={onSave} style={{ flex: 1, minWidth: 120, fontSize: 10, fontWeight: 700, letterSpacing: 1, color: C.moonPrl, background: "linear-gradient(135deg," + C.accent + "," + C.darkMid + ")", padding: "12px 20px", borderRadius: 50, border: "none", cursor: "pointer", textTransform: "uppercase" }}>{saveLabel}</button>
+      <button onClick={onExport} style={{ flex: 1, minWidth: 120, fontSize: 10, fontWeight: 700, letterSpacing: 1, color: C.txt, background: "transparent", padding: "11px 20px", borderRadius: 50, border: "1px solid " + C.borderMid, cursor: "pointer", textTransform: "uppercase" }}>⬇ Download .txt</button>
+    </div>
+  );
+}
+
+// Mount
+document.getElementById('loading').style.display = 'none';
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+
+</body>
+</html>
