@@ -11,20 +11,15 @@
   #root{height:100vh;width:100vw}
   ::-webkit-scrollbar{height:3px;width:4px}
   ::-webkit-scrollbar-thumb{background:rgba(181,123,174,0.32);border-radius:2px}
-  textarea{font-family:'Montserrat',sans-serif;font-weight:500}
+  textarea,input{font-family:'Montserrat',sans-serif;font-weight:500}
   button{font-family:'Montserrat',sans-serif;outline:none}
   @keyframes fadeIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
-  @keyframes expandIn{0%{opacity:0;max-height:0}100%{opacity:1;max-height:5000px}}
-  @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(181,123,174,0.4)}50%{box-shadow:0 0 0 8px rgba(181,123,174,0)}}
-  @keyframes crownShimmer{0%,100%{opacity:0.85}50%{opacity:1}}
   .lesson-content{animation:fadeIn .3s ease both}
-  .expand-content{animation:expandIn .35s ease both;overflow:hidden}
-  .pulse{animation:pulseGlow 2s ease-in-out infinite}
-  .crown-shimmer{animation:crownShimmer 3s ease-in-out infinite}
   @media(max-width:768px){
     .desktop-only{display:none!important}
     .mobile-only{display:flex!important}
-    .sidebar{position:absolute!important;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease}
+    .top-bar-nav{display:none!important}
+    .sidebar{position:absolute!important;left:0;top:64px;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .25s ease}
     .sidebar.open{transform:translateX(0)}
     .main-inner{padding:24px 20px 80px!important}
     .lesson-top{flex-direction:column;gap:8px!important}
@@ -63,7 +58,9 @@ const DARK = {
   moonPrl: "#FAEFF4", txt: "#FAEFF4", txtSec: "#EDD8E5",
   txtMuted: "#C9A8BE", txtFaded: "#9B7090",
   border: "rgba(181,123,174,0.18)", borderMid: "rgba(181,123,174,0.32)",
-  inputBg: "#160C18", shadow: "0 4px 20px rgba(45,15,35,0.4)"
+  inputBg: "#160C18", shadow: "0 4px 20px rgba(45,15,35,0.4)",
+  topBar: "linear-gradient(180deg, #8E5582 0%, #6E3865 100%)",
+  topBarBorder: "rgba(255,255,255,0.08)"
 };
 
 const LIGHT = {
@@ -72,7 +69,9 @@ const LIGHT = {
   moonPrl: "#FFFFFF", txt: "#3A1E33", txtSec: "#5A2F4E",
   txtMuted: "#7A4A6C", txtFaded: "#A87A9A",
   border: "rgba(110,56,101,0.12)", borderMid: "rgba(110,56,101,0.22)",
-  inputBg: "#FBF5F8", shadow: "0 4px 20px rgba(110,56,101,0.1)"
+  inputBg: "#FBF5F8", shadow: "0 4px 20px rgba(110,56,101,0.1)",
+  topBar: "linear-gradient(180deg, #9C648F 0%, #6E3865 100%)",
+  topBarBorder: "rgba(255,255,255,0.12)"
 };
 
 const MODULE_DATA = {
@@ -430,7 +429,7 @@ const MODULE_DATA = {
   ]
 };
 
-const STORAGE_KEY = "quantumqueen-module5-v1";
+const STORAGE_KEY = "quantumqueen-module5-v2-b";
 
 function App() {
   const [theme, setTheme] = useState("dark");
@@ -487,7 +486,6 @@ function App() {
       ids.push(lesson.parallelSelf.closingField.id);
     }
     if (lesson.queenAudit) {
-      lesson.queenAudit.domains.forEach(d => ids.push(d.id));
       ids.push(lesson.queenAudit.closingField.id);
     }
     if (lesson.queenStandards) {
@@ -516,10 +514,10 @@ function App() {
     setTimeout(() => setSaveStatus(""), 2000);
   };
 
-  const exportLesson = (lesson) => {
-    let content = "QUANTUM QUEEN · MODULE 5 — THE CORONATION: BECOMING SOVEREIGN\n";
+  const buildLessonContent = (lesson) => {
+    let content = "";
     content += "Lesson " + lesson.id + ": " + lesson.title + "\n";
-    content += "Exported " + new Date().toLocaleString() + "\n";
+    content += "Duration: " + lesson.dur + "\n";
     content += "═══════════════════════════════════════════════════════\n\n";
 
     if (lesson.journals) {
@@ -529,7 +527,6 @@ function App() {
         content += "───────────────────────────────────────────────────────\n\n";
       });
     }
-
     if (lesson.parallelSelf) {
       const ps = lesson.parallelSelf;
       content += "TIMELINE INFLECTION POINTS\n\n";
@@ -539,14 +536,11 @@ function App() {
         content += "───────────────────────────────────────────────────────\n\n";
       });
       content += "THE LETTER FROM HER\n\n";
-      content += ps.letterField.prompt + "\n\n";
       content += ((journals[ps.letterField.id] && journals[ps.letterField.id].text) || "(no entry)") + "\n\n";
       content += "═══════════════════════════════════════════════════════\n\n";
       content += "THE DECISION\n\n";
-      content += ps.closingField.prompt + "\n\n";
       content += ((journals[ps.closingField.id] && journals[ps.closingField.id].text) || "(no entry)") + "\n\n";
     }
-
     if (lesson.queenAudit) {
       const qa = lesson.queenAudit;
       content += "THE QUEEN AUDIT — SIX DOMAINS\n\n";
@@ -560,10 +554,8 @@ function App() {
         content += "───────────────────────────────────────────────────────\n\n";
       });
       content += "AUDIT CLOSING REFLECTION\n\n";
-      content += qa.closingField.prompt + "\n\n";
       content += ((journals[qa.closingField.id] && journals[qa.closingField.id].text) || "(no entry)") + "\n\n";
     }
-
     if (lesson.queenStandards) {
       const qs = lesson.queenStandards;
       content += "THE QUEEN STANDARDS DOCUMENT\n\n";
@@ -577,7 +569,6 @@ function App() {
         content += "───────────────────────────────────────────────────────\n\n";
       });
     }
-
     if (lesson.coronation) {
       const co = lesson.coronation;
       content += "★ THE CORONATION DECLARATION ★\n\n";
@@ -593,17 +584,39 @@ function App() {
       content += "Place:  " + ((journals[co.signature.locationField.id] && journals[co.signature.locationField.id].text) || "_______________________") + "\n\n";
       content += "═══════════════════════════════════════════════════════\n\n";
       content += "AFTER READING IT OUT LOUD\n\n";
-      content += co.closingField.prompt + "\n\n";
       content += ((journals[co.closingField.id] && journals[co.closingField.id].text) || "(no entry)") + "\n\n";
     }
+    return content;
+  };
 
+  const exportLesson = (lesson) => {
+    let content = "QUANTUM QUEEN · MODULE 5 — THE CORONATION: BECOMING SOVEREIGN\n";
+    content += "Exported " + new Date().toLocaleString() + "\n\n";
+    content += buildLessonContent(lesson);
     content += "\n\nYou are the alchemy.\nBadass Alchemy · Baddie Society · Quantum Queen\n";
+    downloadTxt(content, "quantum-queen-m5-lesson-" + lesson.id + "-" + lesson.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".txt");
+  };
 
+  const exportAllJournals = () => {
+    let content = "QUANTUM QUEEN · MODULE 5 — THE CORONATION: BECOMING SOVEREIGN\n";
+    content += "Full module export · " + new Date().toLocaleString() + "\n";
+    content += "═══════════════════════════════════════════════════════\n\n";
+    MODULE_DATA.lessons.forEach(lesson => {
+      content += "\n\n╔══════════════════════════════════════════════════════╗\n";
+      content += "║ LESSON " + lesson.id + " · " + lesson.title.toUpperCase() + "\n";
+      content += "╚══════════════════════════════════════════════════════╝\n\n";
+      content += buildLessonContent(lesson);
+    });
+    content += "\n\nYou are the alchemy.\nBadass Alchemy · Baddie Society · Quantum Queen\n";
+    downloadTxt(content, "quantum-queen-m5-all-journals-" + new Date().toISOString().slice(0,10) + ".txt");
+  };
+
+  const downloadTxt = (content, filename) => {
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "quantum-queen-m5-lesson-" + lesson.id + "-" + lesson.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".txt";
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -613,531 +626,566 @@ function App() {
   const progress = Math.round((Object.values(done).filter(Boolean).length / MODULE_DATA.lessons.length) * 100);
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: C.bg, color: C.txtSec }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: C.bg, color: C.txtSec }}>
 
-      {/* SIDEBAR */}
-      <div className={"sidebar" + (mobileNav ? " open" : "")} style={{
-        width: 300, minWidth: 300, height: "100%",
-        background: theme === "dark" ? "linear-gradient(180deg, rgba(31,19,32,0.96), rgba(31,19,32,0.99)), url(" + SIDEBAR_IMG + ")" : "linear-gradient(180deg, rgba(251,245,248,0.97), rgba(251,245,248,0.99)), url(" + SIDEBAR_IMG + ")",
-        backgroundSize: "cover", backgroundPosition: "center",
-        borderRight: "1px solid " + C.border,
-        padding: "32px 22px",
-        overflowY: "auto",
-        display: "flex", flexDirection: "column"
+      {/* TOP HEADER BAR */}
+      <div style={{
+        height: 64, minHeight: 64,
+        background: C.topBar,
+        borderBottom: "1px solid " + C.topBarBorder,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 28px",
+        zIndex: 200,
+        position: "relative"
       }}>
-        <div style={{ marginBottom: 28 }}>
-          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2.5, color: C.accentLt, textTransform: "uppercase", marginBottom: 4 }}>
-            ✦ Badass Alchemy
-          </div>
-          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 24, fontWeight: 700, color: C.txt, lineHeight: 1.15 }}>
-            Quantum Queen
-          </div>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, color: C.txtFaded, textTransform: "uppercase", marginTop: 4 }}>
-            Baddie Society
-          </div>
-        </div>
-
-        <div style={{ marginBottom: 24, padding: 16, background: theme === "dark" ? "rgba(110,56,101,0.18)" : "rgba(110,56,101,0.06)", borderRadius: 12, border: "1px solid " + C.border }}>
-          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 6 }}>{MODULE_DATA.title}</div>
-          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 18, fontWeight: 700, color: C.txt, lineHeight: 1.25, marginBottom: 2 }}>{MODULE_DATA.subtitle}</div>
-          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 14, fontWeight: 400, color: C.detail, lineHeight: 1.3, marginBottom: 8 }}>{MODULE_DATA.subtitleAccent}</div>
-          <div style={{ fontSize: 11, color: C.txtMuted, lineHeight: 1.55, fontStyle: "italic" }}>{MODULE_DATA.tagline}</div>
-        </div>
-
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, color: C.txtMuted, textTransform: "uppercase" }}>Progress</span>
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1, color: C.accentLt }}>{progress}%</span>
-          </div>
-          <div style={{ height: 4, background: theme === "dark" ? "rgba(181,123,174,0.15)" : "rgba(110,56,101,0.1)", borderRadius: 4, overflow: "hidden" }}>
-            <div style={{ width: progress + "%", height: "100%", background: BRAND_GRAD, borderRadius: 4, transition: "width .5s cubic-bezier(.34,1.56,.64,1)" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <button onClick={() => setMobileNav(!mobileNav)} className="mobile-only" style={{
+            display: "none", fontSize: 18, color: "#FFFFFF",
+            background: "transparent", border: "none", cursor: "pointer", padding: 4, marginRight: 4
+          }}>☰</button>
+          <div style={{
+            width: 38, height: 38, borderRadius: 10,
+            background: "rgba(255,255,255,0.18)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 18, color: "#FFFFFF"
+          }}>✦</div>
+          <div>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 22, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.1 }}>
+              Quantum Queen
+            </div>
+            <div style={{ fontSize: 9, fontWeight: 800, color: "rgba(255,255,255,0.7)", letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>
+              Badass Alchemy · Baddie Society
+            </div>
           </div>
         </div>
 
-        <div style={{ flex: 1 }}>
-          {MODULE_DATA.lessons.map((lesson, i) => {
-            const isActive = active === i;
-            const isDone = done[i];
-            return (
-              <div
-                key={i}
-                onClick={() => { setActive(i); setMobileNav(false); }}
-                style={{
-                  padding: "12px 14px",
-                  marginBottom: 6,
-                  borderRadius: 10,
-                  cursor: "pointer",
-                  background: isActive ? (theme === "dark" ? "rgba(110,56,101,0.32)" : "rgba(110,56,101,0.1)") : "transparent",
-                  border: "1px solid " + (isActive ? C.borderMid : "transparent"),
-                  transition: "all .2s"
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{
-                    width: 22, height: 22, borderRadius: "50%",
-                    background: isDone ? BRAND_GRAD : "transparent",
-                    border: "1.5px solid " + (isDone ? "transparent" : C.borderMid),
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 10, fontWeight: 800, color: isDone ? "#FFFFFF" : C.txtFaded,
-                    flexShrink: 0
-                  }}>
-                    {isDone ? "✓" : (i)}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 14.5, fontWeight: 700, color: isActive ? C.txt : C.txtSec, lineHeight: 1.3 }}>{lesson.title}</div>
-                    <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, textTransform: "uppercase", marginTop: 2 }}>{lesson.dur}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid " + C.border, display: "flex", gap: 8 }}>
+        <div className="top-bar-nav" style={{ display: "flex", alignItems: "center", gap: 28 }}>
+          <div style={{ fontSize: 11, fontWeight: 800, color: "#FFFFFF", letterSpacing: 2, textTransform: "uppercase", borderBottom: "2px solid #FFFFFF", paddingBottom: 4 }}>Classroom</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.7)", letterSpacing: 2, textTransform: "uppercase", paddingBottom: 4, cursor: "pointer" }}>Community</div>
           <button onClick={toggleTheme} style={{
-            flex: 1, fontSize: 9, fontWeight: 700, letterSpacing: 1,
-            color: C.txtMuted, background: "transparent",
-            padding: "9px 12px", borderRadius: 50,
-            border: "1px solid " + C.borderMid, cursor: "pointer",
-            textTransform: "uppercase"
-          }}>{theme === "dark" ? "☀ Light" : "☾ Dark"}</button>
+            fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
+            color: "#FFFFFF", background: "rgba(255,255,255,0.12)",
+            padding: "8px 16px", borderRadius: 50,
+            border: "1px solid rgba(255,255,255,0.25)", cursor: "pointer",
+            textTransform: "uppercase",
+            display: "flex", alignItems: "center", gap: 6
+          }}>
+            <span>{theme === "dark" ? "☾" : "☀"}</span>
+            <span>{theme === "dark" ? "Dark" : "Light"}</span>
+          </button>
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
-      <div style={{ flex: 1, overflowY: "auto", position: "relative" }}>
+      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
 
-        {/* Mobile top bar */}
-        <div className="mobile-only" style={{
-          display: "none",
-          position: "sticky", top: 0, zIndex: 50,
-          background: C.bg, borderBottom: "1px solid " + C.border,
-          padding: "14px 20px",
-          alignItems: "center", justifyContent: "space-between"
+        {/* SIDEBAR */}
+        <div className={"sidebar" + (mobileNav ? " open" : "")} style={{
+          width: 300, minWidth: 300,
+          background: theme === "dark" ? "linear-gradient(180deg, rgba(31,19,32,0.96), rgba(31,19,32,0.99)), url(" + SIDEBAR_IMG + ")" : "linear-gradient(180deg, rgba(251,245,248,0.94), rgba(251,245,248,0.97)), url(" + SIDEBAR_IMG + ")",
+          backgroundSize: "cover", backgroundPosition: "center",
+          borderRight: "1px solid " + C.border,
+          padding: "30px 22px 22px",
+          overflowY: "auto",
+          display: "flex", flexDirection: "column"
         }}>
-          <button onClick={() => setMobileNav(!mobileNav)} style={{
-            fontSize: 9, fontWeight: 700, letterSpacing: 1,
-            color: C.txt, background: "transparent",
-            padding: "8px 14px", borderRadius: 50,
-            border: "1px solid " + C.borderMid, cursor: "pointer",
-            textTransform: "uppercase"
-          }}>☰ Lessons</button>
-          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 16, color: C.accentLt }}>Module 5</div>
+
+          {/* Module header */}
+          <div style={{ marginBottom: 22 }}>
+            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2.5, color: C.accentLt, textTransform: "uppercase", marginBottom: 8 }}>
+              {MODULE_DATA.title}
+            </div>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: 30, color: C.txt, lineHeight: 1.05, marginBottom: 4 }}>
+              {MODULE_DATA.subtitle}
+            </div>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 400, fontSize: 17, color: C.detail, lineHeight: 1.2, marginBottom: 12 }}>
+              {MODULE_DATA.subtitleAccent}
+            </div>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 13, color: C.txtMuted, lineHeight: 1.5 }}>
+              {MODULE_DATA.tagline}
+            </div>
+          </div>
+
+          {/* Progress */}
+          <div style={{ marginBottom: 22 }}>
+            <div style={{ height: 3, background: theme === "dark" ? "rgba(181,123,174,0.15)" : "rgba(110,56,101,0.1)", borderRadius: 4, overflow: "hidden", marginBottom: 4 }}>
+              <div style={{ width: progress + "%", height: "100%", background: BRAND_GRAD, borderRadius: 4, transition: "width .5s cubic-bezier(.34,1.56,.64,1)" }} />
+            </div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: C.txtMuted, textAlign: "right" }}>{progress}%</div>
+          </div>
+
+          {/* Lessons list */}
+          <div style={{ flex: 1, minHeight: 0 }}>
+            {MODULE_DATA.lessons.map((lesson, i) => {
+              const isActive = active === i;
+              const isDone = done[i];
+              return (
+                <div
+                  key={i}
+                  onClick={() => { setActive(i); setMobileNav(false); }}
+                  style={{
+                    padding: "13px 14px",
+                    marginBottom: 5,
+                    borderRadius: 12,
+                    cursor: "pointer",
+                    background: isActive ? (theme === "dark" ? "rgba(110,56,101,0.32)" : "rgba(110,56,101,0.1)") : "transparent",
+                    border: "1px solid " + (isActive ? C.borderMid : "transparent"),
+                    transition: "all .2s"
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{
+                      width: 18, height: 18, borderRadius: "50%",
+                      background: isDone ? BRAND_GRAD : "transparent",
+                      border: "1.5px solid " + (isDone ? "transparent" : C.borderMid),
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 9, fontWeight: 800, color: isDone ? "#FFFFFF" : "transparent",
+                      flexShrink: 0
+                    }}>
+                      {isDone ? "✓" : ""}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 13, color: isActive ? C.txt : C.txtSec, lineHeight: 1.3 }}>{lesson.title}</div>
+                      <div style={{ fontSize: 10, fontWeight: 500, color: C.txtFaded, marginTop: 3 }}>{lesson.dur}</div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Download all */}
+          <div style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid " + C.border }}>
+            <button onClick={exportAllJournals} style={{
+              width: "100%", fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
+              color: C.txt, background: "transparent",
+              padding: "12px 16px", borderRadius: 50,
+              border: "1px solid " + C.borderMid, cursor: "pointer",
+              textTransform: "uppercase",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8
+            }}>
+              <span>⬇</span>
+              <span>Download All Journals</span>
+            </button>
+          </div>
         </div>
 
-        <div className="main-inner" style={{ padding: "44px 56px 80px", maxWidth: 820, margin: "0 auto" }}>
-          {(() => {
-            const lesson = MODULE_DATA.lessons[active];
+        {/* MAIN CONTENT */}
+        <div style={{ flex: 1, overflowY: "auto", position: "relative" }}>
 
-            return (
-              <div className="lesson-content" key={active}>
+          <div className="main-inner" style={{ padding: "44px 56px 80px", maxWidth: 820, margin: "0 auto" }}>
+            {(() => {
+              const lesson = MODULE_DATA.lessons[active];
+              const totalLessons = MODULE_DATA.lessons.length;
 
-                {/* HEADER */}
-                <div className="lesson-top" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 18, marginBottom: 8 }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2.5, color: C.accentLt, textTransform: "uppercase", marginBottom: 8 }}>
-                      ✦ Lesson {lesson.id} · {lesson.dur}
-                    </div>
-                    <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: "clamp(26px,3.5vw,34px)", lineHeight: 1.15, color: C.txt, marginBottom: 0 }}>
-                      {lesson.title}
-                    </h1>
-                  </div>
-                  <button onClick={() => toggleDone(active)} style={{
-                    fontSize: 9, fontWeight: 700, letterSpacing: 1.2,
-                    color: done[active] ? "#FFFFFF" : C.txtMuted,
-                    background: done[active] ? BRAND_GRAD : "transparent",
-                    padding: "10px 16px", borderRadius: 50,
-                    border: "1px solid " + (done[active] ? "transparent" : C.borderMid),
-                    cursor: "pointer", textTransform: "uppercase",
-                    whiteSpace: "nowrap", flexShrink: 0
-                  }}>{done[active] ? "✓ Complete" : "Mark Complete"}</button>
-                </div>
+              return (
+                <div className="lesson-content" key={active}>
 
-                <div style={{ height: 1, background: C.border, margin: "24px 0 32px" }} />
-
-                {/* DESC */}
-                <div style={{ fontSize: 14.5, lineHeight: 1.85, color: C.txtSec, marginBottom: 22, fontWeight: 500 }}>
-                  {lesson.desc}
-                </div>
-                <div style={{ fontSize: 14.5, lineHeight: 1.85, color: C.txtSec, marginBottom: 36, fontWeight: 500, fontStyle: "italic" }}>
-                  {lesson.desc2}
-                </div>
-
-                {/* VIDEO CALLOUT */}
-                {lesson.type === "video" && (
-                  <div style={{
-                    background: BRAND_GRAD,
-                    borderRadius: 14,
-                    padding: "24px 26px",
-                    marginBottom: 36,
-                    border: "1px solid rgba(255,255,255,0.25)"
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-                      <div style={{ width: 52, height: 52, minWidth: 52, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.4)" }}>
-                        <span style={{ fontSize: 20, color: "#FFFFFF" }}>▶</span>
+                  {/* HEADER */}
+                  <div className="lesson-top" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 18, marginBottom: 8 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2.5, color: C.accentLt, textTransform: "uppercase", marginBottom: 14 }}>
+                        Lesson {lesson.id + 1} of {totalLessons} · {lesson.dur}
                       </div>
-                      <div>
-                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: "#3A1E33", textTransform: "uppercase", marginBottom: 6 }}>Video Lesson</div>
-                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.35 }}>
-                          Watch this lesson inside the <em style={{ color: "#2A1424", fontStyle: "italic", fontWeight: 700 }}>Skool classroom.</em>
-                        </div>
-                      </div>
+                      <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: "clamp(28px,4vw,42px)", lineHeight: 1.1, color: C.txt, marginBottom: 0 }}>
+                        {lesson.title}
+                      </h1>
                     </div>
+                    <button onClick={() => toggleDone(active)} style={{
+                      fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
+                      color: C.txt,
+                      background: "transparent",
+                      padding: "11px 18px", borderRadius: 50,
+                      border: "1px solid " + C.borderMid,
+                      cursor: "pointer", textTransform: "uppercase",
+                      whiteSpace: "nowrap", flexShrink: 0,
+                      display: "flex", alignItems: "center", gap: 8
+                    }}>
+                      <span style={{
+                        width: 12, height: 12, borderRadius: "50%",
+                        background: done[active] ? BRAND_GRAD : "transparent",
+                        border: "1.5px solid " + (done[active] ? "transparent" : C.borderMid),
+                        display: "inline-block"
+                      }}></span>
+                      <span>{done[active] ? "Completed" : "Mark Complete"}</span>
+                    </button>
                   </div>
-                )}
 
-                {/* TAKEAWAYS */}
-                <SectionHeader icon="🌙" label="Core Takeaways" color={C.accent} />
-                <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 24, marginBottom: 32, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                  {lesson.takeaways.map((t, i) => (
-                    <div key={i} style={{ display: "flex", gap: 12, marginBottom: i === lesson.takeaways.length - 1 ? 0 : 16, alignItems: "flex-start" }}>
-                      <span style={{ fontSize: 14, color: C.accentLt, marginTop: 2 }}>✦</span>
-                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 400, fontSize: 16, color: C.txtSec, lineHeight: 1.55 }}>{t}</div>
-                    </div>
-                  ))}
-                </div>
+                  <div style={{ height: 1, background: C.border, margin: "32px 0 36px" }} />
 
-                {/* ACTIONS */}
-                <SectionHeader icon="⭐" label="Your Action Steps" color={C.accent} />
-                <div style={{ marginBottom: 36 }}>
-                  {lesson.actions.map((a, i) => (
-                    <div key={i} style={{ display: "flex", gap: 14, marginBottom: 14, padding: 16, background: C.bgCard, borderRadius: 12, border: "1px solid " + C.border, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                      <div style={{ width: 26, height: 26, borderRadius: "50%", background: BRAND_GRAD, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, fontWeight: 800, color: "#FFFFFF" }}>{i + 1}</div>
-                      <div style={{ fontSize: 13.5, color: C.txtSec, lineHeight: 1.7, fontWeight: 500 }}>{a}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* JOURNALS (values lesson) */}
-                {lesson.journals && (
-                  <div>
-                    <SectionHeader icon="🔮" label="Your Journal Practice" color={C.accent} status={saveStatus} />
-                    {lesson.journals.map(j => {
-                      const entry = journals[j.id];
-                      const isFinal = j.id === "values-final";
-                      return (
-                        <div key={j.id} style={{ background: isFinal ? "linear-gradient(135deg, rgba(110,56,101,0.18), rgba(181,123,174,0.08))" : C.bgCard, borderRadius: 14, border: "1px solid " + (isFinal ? C.borderMid : C.border), padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                          {isFinal && <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 8 }}>★ Your Final Five</div>}
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{j.prompt}</div>
-                          {entry && entry.savedAt && (
-                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
-                          )}
-                          <textarea
-                            value={(entry && entry.text) || ""}
-                            onChange={(ev) => updateJournal(j.id, ev.target.value)}
-                            placeholder={isFinal ? "Your five values, in her words." : "Write here. No editing. Just truth."}
-                            rows={isFinal ? 7 : 6}
-                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
-                          />
-                        </div>
-                      );
-                    })}
-                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Values" />
-                  </div>
-                )}
-
-                {/* PARALLEL SELF */}
-                {lesson.parallelSelf && (
-                  <div>
-                    <SectionHeader icon="⏳" label="Timeline Inflection Points" color={C.accent} status={saveStatus} />
-                    <div style={{ fontSize: 12.5, color: C.txtMuted, lineHeight: 1.7, marginBottom: 18, fontStyle: "italic" }}>
-                      Move through the four timeframes. In each one — name the decision you almost made but did not.
-                    </div>
-                    {lesson.parallelSelf.timelineFields.map((f, i) => {
-                      const entry = journals[f.id];
-                      const labels = ["5 Years Ago", "1 Year Ago", "6 Months Ago", "Last Week"];
-                      return (
-                        <div key={f.id} style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                          <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 8 }}>{labels[i]}</div>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 16, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{f.prompt}</div>
-                          {entry && entry.savedAt && (
-                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
-                          )}
-                          <textarea
-                            value={(entry && entry.text) || ""}
-                            onChange={(ev) => updateJournal(f.id, ev.target.value)}
-                            placeholder="The decision. The moment. What you chose instead."
-                            rows={4}
-                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
-                          />
-                        </div>
-                      );
-                    })}
-
-                    <SectionHeader icon="💌" label="The Letter From Her" color={C.accent} />
-                    {(() => {
-                      const lf = lesson.parallelSelf.letterField;
-                      const entry = journals[lf.id];
-                      return (
-                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.borderMid, padding: 26, marginBottom: 28, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 19, color: theme === "dark" ? C.detail : C.accent, marginBottom: 8, lineHeight: 1.4 }}>{lf.prompt}</div>
-                          {entry && entry.savedAt && (
-                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
-                          )}
-                          <textarea
-                            value={(entry && entry.text) || ""}
-                            onChange={(ev) => updateJournal(lf.id, ev.target.value)}
-                            placeholder={lf.placeholder}
-                            rows={16}
-                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "16px 18px", fontSize: 14, color: C.txtSec, lineHeight: 1.85, resize: "vertical", marginTop: 10, fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic" }}
-                          />
-                        </div>
-                      );
-                    })()}
-
-                    <SectionHeader icon="✨" label="The Decision This Week" color={C.accent} />
-                    {(() => {
-                      const cf = lesson.parallelSelf.closingField;
-                      const entry = journals[cf.id];
-                      return (
-                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
-                          {entry && entry.savedAt && (
-                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
-                          )}
-                          <textarea
-                            value={(entry && entry.text) || ""}
-                            onChange={(ev) => updateJournal(cf.id, ev.target.value)}
-                            placeholder="The decision. And whether you are going to make it."
-                            rows={5}
-                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
-                          />
-                        </div>
-                      );
-                    })()}
-                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Letter" />
-                  </div>
-                )}
-
-                {/* QUEEN AUDIT */}
-                {lesson.queenAudit && (
-                  <div>
+                  {/* VIDEO CALLOUT */}
+                  {lesson.type === "video" && (
                     <div style={{
-                      background: BRAND_GRAD,
-                      borderRadius: 14,
-                      padding: "20px 24px",
-                      marginBottom: 28,
-                      border: "1px solid rgba(255,255,255,0.25)"
+                      background: theme === "dark" ? "linear-gradient(135deg, rgba(110,56,101,0.55), rgba(181,123,174,0.32))" : "linear-gradient(135deg, rgba(181,123,174,0.32), rgba(110,56,101,0.18))",
+                      borderRadius: 16,
+                      padding: "28px 30px",
+                      marginBottom: 40,
+                      border: "1px solid " + C.borderMid
                     }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: "#3A1E33", textTransform: "uppercase", marginBottom: 8 }}>The Audit</div>
-                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 17, fontStyle: "italic", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.5 }}>{lesson.queenAudit.intro}</div>
-                    </div>
-
-                    {lesson.queenAudit.domains.map((d, idx) => (
-                      <div key={d.id} style={{ marginBottom: 32 }}>
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 10 }}>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 32, fontWeight: 700, color: C.accentLt, lineHeight: 1 }}>{d.number}</div>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 22, fontWeight: 700, color: C.txt, lineHeight: 1.2 }}>{d.title}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+                        <div style={{ width: 58, height: 58, minWidth: 58, borderRadius: "50%", background: theme === "dark" ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.5)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid " + (theme === "dark" ? "rgba(255,255,255,0.3)" : "rgba(110,56,101,0.3)") }}>
+                          <span style={{ fontSize: 22, color: theme === "dark" ? "#FFFFFF" : C.accent }}>▶</span>
                         </div>
-                        <div style={{ fontSize: 13.5, color: C.txtMuted, lineHeight: 1.75, marginBottom: 16, fontStyle: "italic", paddingLeft: 4 }}>
-                          {d.framing}
-                        </div>
-                        <div className="krс-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-                          {d.prompts.map(p => {
-                            const value = (auditEntries[d.id] && auditEntries[d.id][p.key]) || "";
-                            const labelColors = {
-                              keep: { bg: theme === "dark" ? "rgba(110,56,101,0.32)" : "rgba(110,56,101,0.12)", txt: theme === "dark" ? "#FAEFF4" : C.accent },
-                              release: { bg: theme === "dark" ? "rgba(155,112,144,0.22)" : "rgba(155,112,144,0.12)", txt: theme === "dark" ? "#C9A8BE" : "#7A4A6C" },
-                              upgrade: { bg: "linear-gradient(135deg, rgba(181,123,174,0.32), rgba(110,56,101,0.32))", txt: "#FFFFFF" }
-                            };
-                            const lc = labelColors[p.key];
-                            return (
-                              <div key={p.key} style={{ background: C.bgCard, borderRadius: 12, border: "1px solid " + C.border, padding: 16, boxShadow: theme === "light" ? C.shadow : "none", display: "flex", flexDirection: "column" }}>
-                                <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: lc.txt, background: lc.bg, padding: "5px 10px", borderRadius: 50, textTransform: "uppercase", marginBottom: 10, alignSelf: "flex-start" }}>{p.label}</div>
-                                <textarea
-                                  value={value}
-                                  onChange={(ev) => updateAudit(d.id, p.key, ev.target.value)}
-                                  placeholder={p.placeholder}
-                                  rows={6}
-                                  style={{ width: "100%", flex: 1, background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 12.5, color: C.txtSec, lineHeight: 1.7, resize: "vertical" }}
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-
-                    <SectionHeader icon="✨" label="Closing Reflection" color={C.accent} status={saveStatus} />
-                    {(() => {
-                      const cf = lesson.queenAudit.closingField;
-                      const entry = journals[cf.id];
-                      return (
-                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
-                          {entry && entry.savedAt && (
-                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
-                          )}
-                          <textarea
-                            value={(entry && entry.text) || ""}
-                            onChange={(ev) => updateJournal(cf.id, ev.target.value)}
-                            placeholder="What did the old identity lose? What does the new identity gain?"
-                            rows={5}
-                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
-                          />
-                        </div>
-                      );
-                    })()}
-                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Audit" />
-                  </div>
-                )}
-
-                {/* QUEEN STANDARDS */}
-                {lesson.queenStandards && (
-                  <div>
-                    <div style={{
-                      background: BRAND_GRAD,
-                      borderRadius: 14,
-                      padding: "20px 24px",
-                      marginBottom: 28,
-                      border: "1px solid rgba(255,255,255,0.25)"
-                    }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2, color: "#3A1E33", textTransform: "uppercase", marginBottom: 8 }}>My Queen Standards</div>
-                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 17, fontStyle: "italic", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.5 }}>{lesson.queenStandards.intro}</div>
-                    </div>
-
-                    {lesson.queenStandards.domains.map(d => (
-                      <div key={d.id} style={{ marginBottom: 36 }}>
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 10 }}>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 30, fontWeight: 700, color: C.accentLt, lineHeight: 1 }}>{d.number}</div>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 20, fontWeight: 700, color: C.txt, lineHeight: 1.2 }}>{d.title}</div>
-                        </div>
-                        <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 14, fontStyle: "italic", paddingLeft: 4 }}>
-                          {d.framing}
-                        </div>
-                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                          {d.fields.map((f, fi) => {
-                            const entry = journals[f.id];
-                            return (
-                              <div key={f.id} style={{ marginBottom: fi === d.fields.length - 1 ? 0 : 16, paddingBottom: fi === d.fields.length - 1 ? 0 : 16, borderBottom: fi === d.fields.length - 1 ? "none" : "1px solid " + C.border }}>
-                                <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 15.5, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{f.prompt}</div>
-                                <textarea
-                                  value={(entry && entry.text) || ""}
-                                  onChange={(ev) => updateJournal(f.id, ev.target.value)}
-                                  placeholder="Be specific. Behavioral. Final."
-                                  rows={3}
-                                  style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 13, color: C.txtSec, lineHeight: 1.7, resize: "vertical", marginTop: 6 }}
-                                />
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Standards" />
-                  </div>
-                )}
-
-                {/* CORONATION CEREMONY */}
-                {lesson.coronation && (
-                  <div>
-                    <div className="crown-shimmer" style={{
-                      background: BRAND_GRAD,
-                      borderRadius: 14,
-                      padding: "28px 26px",
-                      marginBottom: 32,
-                      border: "1px solid rgba(255,255,255,0.35)",
-                      textAlign: "center"
-                    }}>
-                      <div style={{ fontSize: 36, marginBottom: 8 }}>♛</div>
-                      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3, color: "#3A1E33", textTransform: "uppercase", marginBottom: 10 }}>The Coronation</div>
-                      <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 19, fontStyle: "italic", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.5, maxWidth: 520, margin: "0 auto" }}>{lesson.coronation.intro}</div>
-                    </div>
-
-                    {lesson.coronation.parts.map(p => {
-                      const entry = journals[p.id];
-                      return (
-                        <div key={p.id} style={{ marginBottom: 24 }}>
-                          <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 10 }}>
-                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 28, fontWeight: 700, color: C.accentLt, lineHeight: 1, minWidth: 32 }}>{p.number}</div>
-                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 22, fontWeight: 700, color: C.txt, lineHeight: 1.2 }}>{p.title}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 2.5, color: theme === "dark" ? "#FAEFF4" : C.accent, textTransform: "uppercase", marginBottom: 8 }}>Video Lesson</div>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 22, fontWeight: 700, color: C.txt, lineHeight: 1.3 }}>
+                            Watch this lesson inside the <em style={{ color: theme === "dark" ? C.detail : C.accent, fontStyle: "italic", fontWeight: 700 }}>Skool classroom.</em>
                           </div>
-                          <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.borderMid, padding: 24, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 18, color: theme === "dark" ? C.detail : C.accent, marginBottom: 10, lineHeight: 1.4 }}>{p.opener}</div>
-                            <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 12, fontStyle: "italic" }}>{p.prompt}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* DESC */}
+                  <div style={{ fontSize: 15.5, lineHeight: 1.9, color: C.txtSec, marginBottom: 24, fontWeight: 500 }}>
+                    {lesson.desc}
+                  </div>
+                  <div style={{ fontSize: 15.5, lineHeight: 1.9, color: C.txtSec, marginBottom: 40, fontWeight: 500 }}>
+                    {lesson.desc2}
+                  </div>
+
+                  {/* TAKEAWAYS */}
+                  <SectionHeader icon="☾" label="Key Takeaways" color={C.accentLt} />
+                  <div style={{ marginBottom: 40 }}>
+                    {lesson.takeaways.map((t, i) => (
+                      <div key={i} style={{ display: "flex", gap: 14, marginBottom: 12, padding: "16px 20px", background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, alignItems: "flex-start", boxShadow: theme === "light" ? C.shadow : "none" }}>
+                        <span style={{ fontSize: 14, color: C.accentLt, marginTop: 3, flexShrink: 0 }}>✦</span>
+                        <div style={{ fontSize: 14, color: C.txtSec, lineHeight: 1.7, fontWeight: 500 }}>{t}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* ACTIONS */}
+                  <SectionHeader icon="✦" label="Your Action Steps" color={C.accentLt} />
+                  <div style={{ marginBottom: 40 }}>
+                    {lesson.actions.map((a, i) => (
+                      <div key={i} style={{ display: "flex", gap: 14, marginBottom: 12, padding: "16px 20px", background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                        <div style={{ width: 26, height: 26, borderRadius: "50%", background: BRAND_GRAD, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 11, fontWeight: 800, color: "#FFFFFF" }}>{i + 1}</div>
+                        <div style={{ fontSize: 14, color: C.txtSec, lineHeight: 1.7, fontWeight: 500 }}>{a}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* JOURNALS (Values lesson) */}
+                  {lesson.journals && (
+                    <div>
+                      <SectionHeader icon="✦" label="Your Journal Practice" color={C.accentLt} status={saveStatus} />
+                      {lesson.journals.map((j, idx) => {
+                        const entry = journals[j.id];
+                        const isFinal = j.id === "values-final";
+                        return (
+                          <div key={j.id} style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + (isFinal ? C.borderMid : C.border), padding: 24, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                            <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 10 }}>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: 18, color: C.accentLt, lineHeight: 1, minWidth: 24 }}>{idx + 1}</div>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, lineHeight: 1.45, flex: 1 }}>{j.prompt}</div>
+                            </div>
                             {entry && entry.savedAt && (
                               <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 10, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
                             )}
                             <textarea
                               value={(entry && entry.text) || ""}
-                              onChange={(ev) => updateJournal(p.id, ev.target.value)}
-                              placeholder={p.placeholder}
-                              rows={7}
-                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 14, color: C.txtSec, lineHeight: 1.85, resize: "vertical", fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic" }}
+                              onChange={(ev) => updateJournal(j.id, ev.target.value)}
+                              placeholder={isFinal ? "Your five values, in her words." : "First thing that comes up…"}
+                              rows={isFinal ? 7 : 5}
+                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical" }}
                             />
                           </div>
-                        </div>
-                      );
-                    })}
-
-                    {/* SIGNATURE */}
-                    <div style={{ marginBottom: 28 }}>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 10 }}>
-                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 28, fontWeight: 700, color: C.accentLt, lineHeight: 1, minWidth: 32 }}>V</div>
-                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 22, fontWeight: 700, color: C.txt, lineHeight: 1.2 }}>The Signature</div>
-                      </div>
-                      <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 14, fontStyle: "italic", paddingLeft: 48 }}>
-                        Sign your name. Write today's date. Write where you are. This is now a document.
-                      </div>
-                      <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.borderMid, padding: 24, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                        {[lesson.coronation.signature.nameField, lesson.coronation.signature.dateField, lesson.coronation.signature.locationField].map((sf, si) => (
-                          <div key={sf.id} style={{ marginBottom: si === 2 ? 0 : 14 }}>
-                            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 6 }}>{sf.label}</div>
-                            <input
-                              type="text"
-                              value={(journals[sf.id] && journals[sf.id].text) || ""}
-                              onChange={(ev) => updateJournal(sf.id, ev.target.value)}
-                              placeholder={sf.placeholder}
-                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 15, color: C.txtSec, lineHeight: 1.5, fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, outline: "none" }}
-                            />
-                          </div>
-                        ))}
-                      </div>
+                        );
+                      })}
+                      <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Values" theme={theme} />
                     </div>
-
-                    {/* CLOSING */}
-                    <SectionHeader icon="✨" label="After You Read It Out Loud" color={C.accent} status={saveStatus} />
-                    {(() => {
-                      const cf = lesson.coronation.closingField;
-                      const entry = journals[cf.id];
-                      return (
-                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
-                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
-                          {entry && entry.savedAt && (
-                            <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
-                          )}
-                          <textarea
-                            value={(entry && entry.text) || ""}
-                            onChange={(ev) => updateJournal(cf.id, ev.target.value)}
-                            placeholder="One sentence. What is different in your body now?"
-                            rows={4}
-                            style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
-                          />
-                        </div>
-                      );
-                    })()}
-                    <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Coronation" />
-                  </div>
-                )}
-
-                {/* NAVIGATION */}
-                <div style={{ marginTop: 44, paddingTop: 28, borderTop: "1px solid " + C.border, display: "flex", gap: 12, justifyContent: "space-between", alignItems: "center" }} className="lesson-bottom">
-                  {active > 0 ? (
-                    <button onClick={() => setActive(active - 1)} style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: C.txtMuted, background: "transparent", padding: "12px 22px", borderRadius: 50, border: "1px solid " + C.borderMid, cursor: "pointer", textTransform: "uppercase" }}>← Previous</button>
-                  ) : <span />}
-                  {active < MODULE_DATA.lessons.length - 1 && (
-                    <button onClick={() => setActive(active + 1)} style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: C.moonPrl, background: "linear-gradient(135deg," + C.accent + "," + C.darkMid + ")", padding: "13px 24px", borderRadius: 50, border: "none", cursor: "pointer", textTransform: "uppercase" }}>Next Lesson →</button>
                   )}
-                </div>
 
-                <div style={{ marginTop: 56, paddingTop: 28, borderTop: "1px solid " + C.border, textAlign: "center" }}>
-                  <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 18, fontStyle: "italic", color: C.accent, marginBottom: 6 }}>You are the alchemy.</div>
-                  <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 2, textTransform: "uppercase" }}>Badass Alchemy · Baddie Society · Quantum Queen</div>
-                </div>
+                  {/* PARALLEL SELF */}
+                  {lesson.parallelSelf && (
+                    <div>
+                      <SectionHeader icon="✦" label="Timeline Inflection Points" color={C.accentLt} status={saveStatus} />
+                      <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 18, fontStyle: "italic" }}>
+                        Move through the four timeframes. In each one — name the decision you almost made but did not.
+                      </div>
+                      {lesson.parallelSelf.timelineFields.map((f, i) => {
+                        const entry = journals[f.id];
+                        const labels = ["5 Years Ago", "1 Year Ago", "6 Months Ago", "Last Week"];
+                        return (
+                          <div key={f.id} style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 10 }}>{labels[i]}</div>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 16, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.45 }}>{f.prompt}</div>
+                            {entry && entry.savedAt && (
+                              <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 10, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                            )}
+                            <textarea
+                              value={(entry && entry.text) || ""}
+                              onChange={(ev) => updateJournal(f.id, ev.target.value)}
+                              placeholder="The decision. The moment. What you chose instead."
+                              rows={4}
+                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 4 }}
+                            />
+                          </div>
+                        );
+                      })}
 
-              </div>
-            );
-          })()}
+                      <div style={{ marginTop: 28 }}>
+                        <SectionHeader icon="✦" label="The Letter From Her" color={C.accentLt} />
+                      </div>
+                      {(() => {
+                        const lf = lesson.parallelSelf.letterField;
+                        const entry = journals[lf.id];
+                        return (
+                          <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.borderMid, padding: 26, marginBottom: 28, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 19, color: theme === "dark" ? C.detail : C.accent, marginBottom: 12, lineHeight: 1.4 }}>{lf.prompt}</div>
+                            {entry && entry.savedAt && (
+                              <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                            )}
+                            <textarea
+                              value={(entry && entry.text) || ""}
+                              onChange={(ev) => updateJournal(lf.id, ev.target.value)}
+                              placeholder={lf.placeholder}
+                              rows={16}
+                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "16px 18px", fontSize: 14, color: C.txtSec, lineHeight: 1.85, resize: "vertical", fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic" }}
+                            />
+                          </div>
+                        );
+                      })()}
+
+                      <SectionHeader icon="✦" label="The Decision This Week" color={C.accentLt} />
+                      {(() => {
+                        const cf = lesson.parallelSelf.closingField;
+                        const entry = journals[cf.id];
+                        return (
+                          <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
+                            {entry && entry.savedAt && (
+                              <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                            )}
+                            <textarea
+                              value={(entry && entry.text) || ""}
+                              onChange={(ev) => updateJournal(cf.id, ev.target.value)}
+                              placeholder="The decision. And whether you are going to make it."
+                              rows={5}
+                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
+                            />
+                          </div>
+                        );
+                      })()}
+                      <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Letter" theme={theme} />
+                    </div>
+                  )}
+
+                  {/* QUEEN AUDIT */}
+                  {lesson.queenAudit && (
+                    <div>
+                      <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.75, marginBottom: 32, fontStyle: "italic", padding: "16px 20px", background: C.bgCard, borderRadius: 12, border: "1px solid " + C.border, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                        {lesson.queenAudit.intro}
+                      </div>
+
+                      {lesson.queenAudit.domains.map((d, idx) => (
+                        <div key={d.id} style={{ marginBottom: 36 }}>
+                          <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 10 }}>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 28, fontWeight: 700, color: C.accentLt, lineHeight: 1 }}>{d.number}</div>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: 24, color: C.txt, lineHeight: 1.2 }}>{d.title}</div>
+                          </div>
+                          <div style={{ fontSize: 13.5, color: C.txtMuted, lineHeight: 1.75, marginBottom: 16, fontStyle: "italic", paddingLeft: 4 }}>
+                            {d.framing}
+                          </div>
+                          <div className="krс-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                            {d.prompts.map(p => {
+                              const value = (auditEntries[d.id] && auditEntries[d.id][p.key]) || "";
+                              const labelColors = {
+                                keep: { bg: theme === "dark" ? "rgba(110,56,101,0.32)" : "rgba(110,56,101,0.12)", txt: theme === "dark" ? "#FAEFF4" : C.accent },
+                                release: { bg: theme === "dark" ? "rgba(155,112,144,0.22)" : "rgba(155,112,144,0.12)", txt: theme === "dark" ? "#C9A8BE" : "#7A4A6C" },
+                                upgrade: { bg: "linear-gradient(135deg, rgba(181,123,174,0.32), rgba(110,56,101,0.32))", txt: theme === "dark" ? "#FFFFFF" : C.accent }
+                              };
+                              const lc = labelColors[p.key];
+                              return (
+                                <div key={p.key} style={{ background: C.bgCard, borderRadius: 12, border: "1px solid " + C.border, padding: 16, boxShadow: theme === "light" ? C.shadow : "none", display: "flex", flexDirection: "column" }}>
+                                  <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: lc.txt, background: lc.bg, padding: "5px 10px", borderRadius: 50, textTransform: "uppercase", marginBottom: 10, alignSelf: "flex-start" }}>{p.label}</div>
+                                  <textarea
+                                    value={value}
+                                    onChange={(ev) => updateAudit(d.id, p.key, ev.target.value)}
+                                    placeholder={p.placeholder}
+                                    rows={6}
+                                    style={{ width: "100%", flex: 1, background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 12.5, color: C.txtSec, lineHeight: 1.7, resize: "vertical" }}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+
+                      <SectionHeader icon="✦" label="Closing Reflection" color={C.accentLt} status={saveStatus} />
+                      {(() => {
+                        const cf = lesson.queenAudit.closingField;
+                        const entry = journals[cf.id];
+                        return (
+                          <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
+                            {entry && entry.savedAt && (
+                              <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                            )}
+                            <textarea
+                              value={(entry && entry.text) || ""}
+                              onChange={(ev) => updateJournal(cf.id, ev.target.value)}
+                              placeholder="What did the old identity lose? What does the new identity gain?"
+                              rows={5}
+                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
+                            />
+                          </div>
+                        );
+                      })()}
+                      <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Audit" theme={theme} />
+                    </div>
+                  )}
+
+                  {/* QUEEN STANDARDS */}
+                  {lesson.queenStandards && (
+                    <div>
+                      <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.75, marginBottom: 32, fontStyle: "italic", padding: "16px 20px", background: C.bgCard, borderRadius: 12, border: "1px solid " + C.border, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                        {lesson.queenStandards.intro}
+                      </div>
+
+                      {lesson.queenStandards.domains.map(d => (
+                        <div key={d.id} style={{ marginBottom: 36 }}>
+                          <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 10 }}>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 28, fontWeight: 700, color: C.accentLt, lineHeight: 1 }}>{d.number}</div>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: 22, color: C.txt, lineHeight: 1.2 }}>{d.title}</div>
+                          </div>
+                          <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 14, fontStyle: "italic", paddingLeft: 4 }}>
+                            {d.framing}
+                          </div>
+                          <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                            {d.fields.map((f, fi) => {
+                              const entry = journals[f.id];
+                              return (
+                                <div key={f.id} style={{ marginBottom: fi === d.fields.length - 1 ? 0 : 16, paddingBottom: fi === d.fields.length - 1 ? 0 : 16, borderBottom: fi === d.fields.length - 1 ? "none" : "1px solid " + C.border }}>
+                                  <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 15.5, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{f.prompt}</div>
+                                  <textarea
+                                    value={(entry && entry.text) || ""}
+                                    onChange={(ev) => updateJournal(f.id, ev.target.value)}
+                                    placeholder="Be specific. Behavioral. Final."
+                                    rows={3}
+                                    style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 13, color: C.txtSec, lineHeight: 1.7, resize: "vertical", marginTop: 6 }}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                      <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Standards" theme={theme} />
+                    </div>
+                  )}
+
+                  {/* CORONATION CEREMONY — Version B (escalated) */}
+                  {lesson.coronation && (
+                    <div>
+                      <div style={{
+                        background: BRAND_GRAD,
+                        borderRadius: 18,
+                        padding: "32px 28px",
+                        marginBottom: 36,
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        textAlign: "center",
+                        boxShadow: theme === "light" ? "0 8px 30px rgba(110,56,101,0.18)" : "0 8px 30px rgba(110,56,101,0.4)"
+                      }}>
+                        <div style={{ fontSize: 42, marginBottom: 10, color: "#FFFFFF", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>♛</div>
+                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3.5, color: "rgba(255,255,255,0.95)", textTransform: "uppercase", marginBottom: 14 }}>The Coronation</div>
+                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontStyle: "italic", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.5, maxWidth: 540, margin: "0 auto" }}>{lesson.coronation.intro}</div>
+                      </div>
+
+                      {lesson.coronation.parts.map(p => {
+                        const entry = journals[p.id];
+                        return (
+                          <div key={p.id} style={{ marginBottom: 24 }}>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 10 }}>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 26, fontWeight: 700, color: C.accentLt, lineHeight: 1, minWidth: 32 }}>{p.number}</div>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: 22, color: C.txt, lineHeight: 1.2 }}>{p.title}</div>
+                            </div>
+                            <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 24, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 18, color: theme === "dark" ? C.detail : C.accent, marginBottom: 10, lineHeight: 1.4 }}>{p.opener}</div>
+                              <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 12, fontStyle: "italic" }}>{p.prompt}</div>
+                              {entry && entry.savedAt && (
+                                <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 10, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                              )}
+                              <textarea
+                                value={(entry && entry.text) || ""}
+                                onChange={(ev) => updateJournal(p.id, ev.target.value)}
+                                placeholder={p.placeholder}
+                                rows={7}
+                                style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 14, color: C.txtSec, lineHeight: 1.85, resize: "vertical", fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic" }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      <div style={{ marginBottom: 28 }}>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: 10 }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 26, fontWeight: 700, color: C.accentLt, lineHeight: 1, minWidth: 32 }}>V</div>
+                          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 700, fontSize: 22, color: C.txt, lineHeight: 1.2 }}>The Signature</div>
+                        </div>
+                        <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.7, marginBottom: 14, fontStyle: "italic", paddingLeft: 48 }}>
+                          Sign your name. Write today's date. Write where you are. This is now a document.
+                        </div>
+                        <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 24, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                          {[lesson.coronation.signature.nameField, lesson.coronation.signature.dateField, lesson.coronation.signature.locationField].map((sf, si) => (
+                            <div key={sf.id} style={{ marginBottom: si === 2 ? 0 : 14 }}>
+                              <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: 2, color: C.accentLt, textTransform: "uppercase", marginBottom: 6 }}>{sf.label}</div>
+                              <input
+                                type="text"
+                                value={(journals[sf.id] && journals[sf.id].text) || ""}
+                                onChange={(ev) => updateJournal(sf.id, ev.target.value)}
+                                placeholder={sf.placeholder}
+                                style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 8, padding: "12px 14px", fontSize: 15, color: C.txtSec, lineHeight: 1.5, fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, outline: "none" }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <SectionHeader icon="✦" label="After You Read It Out Loud" color={C.accentLt} status={saveStatus} />
+                      {(() => {
+                        const cf = lesson.coronation.closingField;
+                        const entry = journals[cf.id];
+                        return (
+                          <div style={{ background: C.bgCard, borderRadius: 14, border: "1px solid " + C.border, padding: 22, marginBottom: 14, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 700, fontSize: 17, color: theme === "dark" ? C.detail : C.accent, marginBottom: 6, lineHeight: 1.4 }}>{cf.prompt}</div>
+                            {entry && entry.savedAt && (
+                              <div style={{ fontSize: 8, fontWeight: 700, color: C.txtFaded, letterSpacing: 1, marginBottom: 12, textTransform: "uppercase" }}>Last saved {new Date(entry.savedAt).toLocaleString()}</div>
+                            )}
+                            <textarea
+                              value={(entry && entry.text) || ""}
+                              onChange={(ev) => updateJournal(cf.id, ev.target.value)}
+                              placeholder="One sentence. What is different in your body now?"
+                              rows={4}
+                              style={{ width: "100%", background: C.inputBg, border: "1px solid " + C.border, borderRadius: 10, padding: "14px 16px", fontSize: 13.5, color: C.txtSec, lineHeight: 1.75, resize: "vertical", marginTop: 8 }}
+                            />
+                          </div>
+                        );
+                      })()}
+                      <SaveExportButtons onSave={saveLessonJournals} onExport={() => exportLesson(lesson)} C={C} saveLabel="✦ Save Coronation" theme={theme} />
+                    </div>
+                  )}
+
+                  {/* NAVIGATION */}
+                  <div style={{ marginTop: 48, paddingTop: 32, borderTop: "1px solid " + C.border, display: "flex", gap: 12, justifyContent: "space-between", alignItems: "center" }} className="lesson-bottom">
+                    {active > 0 ? (
+                      <button onClick={() => setActive(active - 1)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: C.txt, background: "transparent", padding: "14px 28px", borderRadius: 50, border: "1px solid " + C.borderMid, cursor: "pointer", textTransform: "uppercase" }}>← Previous</button>
+                    ) : <span />}
+                    {active < MODULE_DATA.lessons.length - 1 ? (
+                      <button onClick={() => setActive(active + 1)} style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: "#FFFFFF", background: BRAND_GRAD, padding: "14px 28px", borderRadius: 50, border: "none", cursor: "pointer", textTransform: "uppercase" }}>Next Lesson →</button>
+                    ) : <span />}
+                  </div>
+
+                  <div style={{ marginTop: 56, paddingTop: 32, borderTop: "1px solid " + C.border, textAlign: "center" }}>
+                    <div style={{ fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontSize: 20, color: C.accent, marginBottom: 8 }}>You are the alchemy.</div>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: C.txtFaded, letterSpacing: 2, textTransform: "uppercase" }}>Badass Alchemy · Baddie Society · Quantum Queen</div>
+                  </div>
+
+                </div>
+              );
+            })()}
+          </div>
         </div>
       </div>
     </div>
@@ -1146,19 +1194,24 @@ function App() {
 
 function SectionHeader({ icon, label, color, status }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-      <span style={{ fontSize: 16 }}>{icon}</span>
-      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, color: color, textTransform: "uppercase" }}>{label}</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+      <span style={{ fontSize: 16, color: color }}>{icon}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2.5, color: color, textTransform: "uppercase" }}>{label}</span>
       {status && <span style={{ marginLeft: "auto", fontSize: 9, fontWeight: 700, letterSpacing: 1, color: color }}>{status}</span>}
     </div>
   );
 }
 
-function SaveExportButtons({ onSave, onExport, C, saveLabel }) {
+function SaveExportButtons({ onSave, onExport, C, saveLabel, theme }) {
   return (
-    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
-      <button onClick={onSave} style={{ flex: 1, minWidth: 120, fontSize: 10, fontWeight: 700, letterSpacing: 1, color: C.moonPrl, background: "linear-gradient(135deg," + C.accent + "," + C.darkMid + ")", padding: "12px 20px", borderRadius: 50, border: "none", cursor: "pointer", textTransform: "uppercase" }}>{saveLabel}</button>
-      <button onClick={onExport} style={{ flex: 1, minWidth: 120, fontSize: 10, fontWeight: 700, letterSpacing: 1, color: C.txt, background: "transparent", padding: "11px 20px", borderRadius: 50, border: "1px solid " + C.borderMid, cursor: "pointer", textTransform: "uppercase" }}>⬇ Download .txt</button>
+    <div>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 8 }}>
+        <button onClick={onSave} style={{ flex: 1, minWidth: 160, fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: "#FFFFFF", background: "linear-gradient(135deg," + C.accent + "," + C.darkMid + ")", padding: "14px 22px", borderRadius: 50, border: "none", cursor: "pointer", textTransform: "uppercase" }}>{saveLabel}</button>
+        <button onClick={onExport} style={{ flex: 1, minWidth: 160, fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: C.txt, background: "transparent", padding: "13px 22px", borderRadius: 50, border: "1px solid " + C.borderMid, cursor: "pointer", textTransform: "uppercase" }}>⬇ Download .txt</button>
+      </div>
+      <div style={{ fontSize: 11, color: C.txtMuted, lineHeight: 1.6, marginTop: 12 }}>
+        Your entries save to this browser. Download the .txt to upload to Google Drive, Notion, or anywhere you keep your reflections.
+      </div>
     </div>
   );
 }
