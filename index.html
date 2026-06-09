@@ -429,7 +429,7 @@ const MODULE_DATA = {
   ]
 };
 
-const STORAGE_KEY = "quantumqueen-module5-v2-b";
+const STORAGE_KEY = "quantumqueen-module5-v2-a";
 
 function App() {
   const [theme, setTheme] = useState("dark");
@@ -686,8 +686,8 @@ function App() {
           backgroundSize: "cover", backgroundPosition: "center",
           borderRight: "1px solid " + C.border,
           padding: "30px 22px 22px",
-          overflowY: "auto",
-          display: "flex", flexDirection: "column"
+          display: "flex", flexDirection: "column",
+          overflow: "hidden"
         }}>
 
           {/* Module header */}
@@ -715,7 +715,7 @@ function App() {
           </div>
 
           {/* Lessons list */}
-          <div style={{ flex: 1, minHeight: 0 }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", marginRight: -8, paddingRight: 8 }}>
             {MODULE_DATA.lessons.map((lesson, i) => {
               const isActive = active === i;
               const isDone = done[i];
@@ -755,7 +755,7 @@ function App() {
           </div>
 
           {/* Download all */}
-          <div style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid " + C.border }}>
+          <div style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid " + C.border, flexShrink: 0 }}>
             <button onClick={exportAllJournals} style={{
               width: "100%", fontSize: 10, fontWeight: 700, letterSpacing: 1.5,
               color: C.txt, background: "transparent",
@@ -1076,21 +1076,11 @@ function App() {
                     </div>
                   )}
 
-                  {/* CORONATION CEREMONY — Version B (escalated) */}
+                  {/* CORONATION CEREMONY — Version A (consistent style) */}
                   {lesson.coronation && (
                     <div>
-                      <div style={{
-                        background: BRAND_GRAD,
-                        borderRadius: 18,
-                        padding: "32px 28px",
-                        marginBottom: 36,
-                        border: "1px solid rgba(255,255,255,0.3)",
-                        textAlign: "center",
-                        boxShadow: theme === "light" ? "0 8px 30px rgba(110,56,101,0.18)" : "0 8px 30px rgba(110,56,101,0.4)"
-                      }}>
-                        <div style={{ fontSize: 42, marginBottom: 10, color: "#FFFFFF", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>♛</div>
-                        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 3.5, color: "rgba(255,255,255,0.95)", textTransform: "uppercase", marginBottom: 14 }}>The Coronation</div>
-                        <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 20, fontStyle: "italic", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.5, maxWidth: 540, margin: "0 auto" }}>{lesson.coronation.intro}</div>
+                      <div style={{ fontSize: 13, color: C.txtMuted, lineHeight: 1.75, marginBottom: 32, fontStyle: "italic", padding: "16px 20px", background: C.bgCard, borderRadius: 12, border: "1px solid " + C.border, boxShadow: theme === "light" ? C.shadow : "none" }}>
+                        {lesson.coronation.intro}
                       </div>
 
                       {lesson.coronation.parts.map(p => {
